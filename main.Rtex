@@ -1,0 +1,152 @@
+\documentclass[10pt, a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[section]{placeins}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={Bayesian Statistics 2021-2022 Project},
+  pdfauthor={Shilaan Alzahawi, Stijn Huysman, Dylan Meysmans, Leah Shitindi & Niels Tack}
+}
+\usepackage[toc, page]{appendix}
+\usepackage{pdfpages}
+\usepackage{microtype}
+
+<<init, echo=FALSE>>=
+knit_hooks$set(document = function(x) {
+  sub('\\usepackage[]{color}',
+'\\usepackage[usenames,dvipsnames]{color}', x, fixed = TRUE)
+})
+opts_chunk$set(fig.path="figures/knitr-")
+opts_chunk$set(fig.pos = 'H')
+
+@
+
+<<setup, echo=FALSE>>=
+
+library(readr)
+
+@
+
+\title{Bayesian Statistics - Project report}
+\author{Shilaan Alzahawi, Stijn Huysman, Dylan Meysmans, Leah Shitindi & Niels Tack}
+\date{10 June 2022}
+\setlength\paperwidth{20.999cm}\setlength\paperheight{29.699cm}\setlength\voffset{-1in}\setlength\hoffset{-1in}\setlength\topmargin{1.499cm}\setlength\headheight{12pt}\setlength\headsep{0cm}\setlength\footskip{1.131cm}\setlength\textheight{25cm}\setlength\oddsidemargin{2.5cm}\setlength\textwidth{15.99cm}
+\begin{document}
+\begin{titlepage}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\center 
+\textsc{\Large Bayesian Statistics}\\[0.5cm] 
+\textsc{\large Faculty of Sciences}\\[0.5cm] 
+\HRule \\[0.4cm]
+{ \huge \bfseries Project \\[0.4cm]}
+\HRule \\[1.5cm]
+Shilaan \textsc{Alzahawi}\\
+Stijn \textsc{Huysman}\\
+Dylan \textsc{Meysmans}\\
+Leah \textsc{Shitindi}\\
+Niels \textsc{Tack}\\
+[5cm]
+{\large 10 June 2022}\\[3cm] 
+\vfill 
+\end{titlepage}
+\tableofcontents
+\newpage
+\section{Protocol}
+\subsection{Research question}
+xx
+
+\subsection{Steps to execute}
+
+
+\begin{enumerate}
+    \itemsep0em
+\item xx
+\end{enumerate}
+
+\newpage
+\section{Report}
+\subsection{Research question and study design}
+xx
+
+\subsection{Data exploration}
+
+<<exploration, echo=TRUE>>=
+
+
+@
+
+\begin{center}
+\begin{tabular}{ c | c | c | c | c | c}
+Training set                         & PRESS     & MSE       & Adjusted R²   & AIC       & Acc\\ \hline
+Only White                           & 27.6616   & 0.018124  & 0.26678       & -6110.06  & 0.85499\\
+Final model without interaction      & 17.7140   & 0.011430  & 0.53758       & -6804.61  &  0.84449  \\
+Final model                          & 17.7140   & 0.011430  & 0.53758       & -6804.61  & 0.84843 \\
+\end{tabular}
+\end{center}
+
+
+
+
+
+\hspace{0.25in}
+
+$logit(p) = -5 + (-2) \cdot White + (-300) \cdot Deaths + (4) \cdot Transit + (6) \cdot Unemployment + (0.09) \cdot IncomePerCap + (-1300) \cdot White \cdot Deaths + (130) \cdot White \cdot Transit$
+
+\hspace{0.25in}
+
+
+
+\subsection{}
+
+
+\subsection{Deviations from Protocol}
+
+
+\begin{itemize}
+\item We .
+\end{itemize} 
+\clearpage
+\newpage
+
+
+\begin{appendices}
+
+\subsection{Task distribution}
+
+xx
+\newpage
+
+\section{Source material}
+\begin{itemize}
+\item xx
+\end{itemize}
+\newpage
+
+\section{Graphics}
+\subsection{xx}
+\label{appendix: xx}
+xx
+
+\begin{figure}[hbt!]
+    \centering
+    %\includegraphics[width=\textwidth]{Univariate.png}
+    \caption{Histograms of univariate analysis of variables}
+    \label{fig:Univariate histograms}
+\end{figure}
+\newpage
+
+
+
+
+
+\FloatBarrier
+\newpage
+
+
+\end{appendices}
+
+\end{document}
