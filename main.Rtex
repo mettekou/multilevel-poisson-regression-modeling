@@ -1,5 +1,10 @@
 \documentclass[10pt, a4paper]{article}
 
+\usepackage[T1]{fontenc}
+\usepackage{fontspec}
+
+\
+
 \usepackage{amsmath}
 \usepackage{caption}
 \usepackage{graphicx}
