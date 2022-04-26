@@ -1,9 +1,14 @@
-\documentclass[10pt, a4paper]{article}
+\documentclass[10pt, a4paper]{report}
 
-\usepackage[T1]{fontenc}
 \usepackage{fontspec}
 
-\
+\setmainfont{[UGentPannoText-Normal.ttf]}
+
+\usepackage{moresize}
+
+\usepackage{parskip}
+
+\setlength{\parindent}{0pt}
 
 \usepackage{amsmath}
 \usepackage{caption}
@@ -16,9 +21,20 @@
   pdftitle={Bayesian Statistics 2021-2022 Project},
   pdfauthor={Shilaan Alzahawi, Stijn Huysman, Dylan Meysmans, Leah Shitindi & Niels Tack}
 }
-\usepackage[toc, page]{appendix}
-\usepackage{pdfpages}
-\usepackage{microtype}
+\usepackage[toc, page]{appendix}%
+\usepackage{pdfpages}%
+\usepackage{microtype}%
+\usepackage{tikz}%
+\usepackage[a4paper]{geometry}%
+\usepackage{etoolbox}%
+\usepackage{printlen}%
+%
+\usepackage{xcolor}%
+%
+\definecolor{UGentBlue}{RGB/cmyk}{30,100,200/1,0.4,0,0}%
+\definecolor{UGentYellow}{RGB/cmyk}{255,210,0/0,0.1,1,0}%
+%
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 <<init, echo=FALSE>>=
 knit_hooks$set(document = function(x) {
@@ -41,23 +57,7 @@ library(readr)
 \date{10 June 2022}
 \setlength\paperwidth{20.999cm}\setlength\paperheight{29.699cm}\setlength\voffset{-1in}\setlength\hoffset{-1in}\setlength\topmargin{1.499cm}\setlength\headheight{12pt}\setlength\headsep{0cm}\setlength\footskip{1.131cm}\setlength\textheight{25cm}\setlength\oddsidemargin{2.5cm}\setlength\textwidth{15.99cm}
 \begin{document}
-\begin{titlepage}
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
-\center 
-\textsc{\Large Bayesian Statistics}\\[0.5cm] 
-\textsc{\large Faculty of Sciences}\\[0.5cm] 
-\HRule \\[0.4cm]
-{ \huge \bfseries Project \\[0.4cm]}
-\HRule \\[1.5cm]
-Shilaan \textsc{Alzahawi}\\
-Stijn \textsc{Huysman}\\
-Dylan \textsc{Meysmans}\\
-Leah \textsc{Shitindi}\\
-Niels \textsc{Tack}\\
-[5cm]
-{\large 10 June 2022}\\[3cm] 
-\vfill 
-\end{titlepage}
+\include{titlepage}
 \tableofcontents
 \newpage
 \section{Protocol}
