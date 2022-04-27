@@ -62,7 +62,7 @@ library(readr)
 \title{Bayesian Statistics - Project report}
 \author{Shilaan Alzahawi, Stijn Huysman, Dylan Meysmans, Leah Shitindi & Niels Tack}
 \date{10 June 2022}
-\setlength\paperwidth{20.999cm}\setlength\paperheight{29.699cm}\setlength\voffset{-1in}\setlength\hoffset{-1in}\setlength\topmargin{1.499cm}\setlength\headheight{12pt}\setlength\headsep{0cm}\setlength\footskip{1.131cm}\setlength\textheight{25cm}\setlength\oddsidemargin{2.5cm}\setlength\textwidth{15.99cm}
+
 \begin{document}
 \include{titlepage}
 \tableofcontents
