@@ -1,8 +1,15 @@
 \documentclass[10pt, a4paper]{report}
 
+\usepackage[abspath]{currfile}
+
 \usepackage{fontspec}
 
-\setmainfont{[UGentPannoText-Normal.ttf]}
+\setmainfont[
+  Path          = \currfileabsdir,
+  Ligatures     = TeX,
+  UprightFont   = ../bin/fonts/UGentPannoText-Normal.otf,
+  BoldFont      = ../bin/fonts/UGentPannoText-SemiBold.otf
+]{UGentPannoText}
 
 \usepackage{moresize}
 
