@@ -1,0 +1,56 @@
+\usepackage{tikz}
+\usepackage{graphicx}
+
+\usepackage[abspath]{currfile}
+
+\setmainfont[
+Path          = \currfileabsdir,
+Ligatures     = TeX,
+UprightFont   = bin/fonts/UGentPannoText-Normal.otf,
+BoldFont      = bin/fonts/UGentPannoText-SemiBold.otf
+]{UGentPannoText}
+
+\setmonofont[
+Path          = \currfileabsdir,
+Ligatures     = TeX,
+UprightFont   = bin/fonts/iosevka-ss08-regular.ttf,
+BoldFont      = bin/fonts/iosevka-ss08-bold.ttf
+]{Iosevka}
+
+\setlength{\parindent}{0pt}
+
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[section]{placeins}
+\usepackage[toc, page]{appendix}%
+\usepackage{pdfpages}%
+\usepackage{etoolbox}%
+%
+\usepackage{xcolor}%
+%
+\definecolor{UGentBlue}{RGB/cmyk}{30,100,200/1,0.4,0,0}%
+\definecolor{UGentYellow}{RGB/cmyk}{255,210,0/0,0.1,1,0}%
+\definecolor{UGentWeAqua}{RGB/cmyk}{45,145,168/}%
+
+\usepackage[explicit]{titlesec}
+\titleformat{\chapter}
+  {\color{UGentBlue}\huge\MakeUppercase}
+  {}
+  {0pt}
+  {\underline{#1}}
+
+\titleformat{\section}
+  {\Large\bfseries\color{UGentBlue}}
+  {}
+  {0pt}
+  {#1}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{UGentBlue}}
+  {}
+  {0pt}
+  {#1}
+
+\makeatletter % change only the display of \thepage, but not \thepage itself:
+\patchcmd{\ps@plain}{\thepage}{\textcolor{UGentBlue}{\thepage}}{}{}
+\makeatother

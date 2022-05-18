@@ -1,0 +1,18 @@
+---
+title: Multilevel Poisson Regression Modelling
+author:
+    - Shilaan Alzahawi
+    - Stijn Huysman
+    - Dylan Meysmans
+    - Leah Shitindi
+    - Niels Tack
+date: "`r Sys.Date()`"
+documentclass: report
+papersize: a4
+output: 
+  bookdown::pdf_book:
+    latex_engine: xelatex
+    includes:
+      in_header: preamble.tex
+      before_body: titlepage.tex
+---
