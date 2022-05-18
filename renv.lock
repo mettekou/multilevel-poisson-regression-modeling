@@ -27,17 +27,6 @@
         "lattice"
       ]
     },
-    "R2OpenBUGS": {
-      "Package": "R2OpenBUGS",
-      "Version": "3.2-3.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "7d0524b976e510c120184b23b65e28a6",
-      "Requirements": [
-        "boot",
-        "coda"
-      ]
-    },
     "R6": {
       "Package": "R6",
       "Version": "2.5.1",
@@ -95,14 +84,6 @@
         "xfun",
         "yaml"
       ]
-    },
-    "boot": {
-      "Package": "boot",
-      "Version": "1.3-28",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0baa960e3b49c6176a4f42addcbacc59",
-      "Requirements": []
     },
     "bslib": {
       "Package": "bslib",
@@ -262,6 +243,16 @@
       "Repository": "CRAN",
       "Hash": "ac5c6baf7822ce8732b343f14c072c4d",
       "Requirements": []
+    },
+    "here": {
+      "Package": "here",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "24b224366f9c2e7534d2344d10d59211",
+      "Requirements": [
+        "rprojroot"
+      ]
     },
     "highr": {
       "Package": "highr",
@@ -525,6 +516,25 @@
         "tinytex",
         "xfun",
         "yaml"
+      ]
+    },
+    "rprojroot": {
+      "Package": "rprojroot",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1de7ab598047a87bba48434ba35d497d",
+      "Requirements": []
+    },
+    "runjags": {
+      "Package": "runjags",
+      "Version": "2.2.1-7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3910744c8b28fb2f756eadcc831bf212",
+      "Requirements": [
+        "coda",
+        "lattice"
       ]
     },
     "sass": {
