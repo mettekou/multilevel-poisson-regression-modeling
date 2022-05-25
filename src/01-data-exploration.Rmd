@@ -1,0 +1,60 @@
+# Data exploration
+
+## Read data
+
+Second, we read in the RN4CAST data. (Adjust the file path if you need to).
+
+```{r}
+library(here) # Load here
+```
+
+```{r read-data}
+data_path <- "data/BurnoutPA.txt"
+RN4CAST <- read.delim(here(data_path))
+```
+
+```{r load, echo=FALSE}
+library(readr)
+# column_names <- c(
+#     "hosp",
+#     "unit",
+#     "tech",
+#     "teach",
+#     "beds",
+#     "surgical_unit",
+#     "work_environment_index",
+#     "experience",
+#     "fulltime",
+#     "personal_accomplishment"
+# )
+RN4CAST <-
+    read_table(
+        data_path,
+        col_names = TRUE,
+        # col_names = column_names,
+        col_types = cols(
+            col_integer(),
+            col_integer(),
+            col_factor(),
+            col_factor(),
+            col_integer(),
+            col_factor(),
+            col_double(),
+            col_double(),
+            col_factor(),
+            col_integer()
+        )
+    )
+```
+
+## Univariate
+
+```{r summary}
+summary(data)
+```
+
+```{r}
+library(ggplot2)
+qplot(data$work_environment_index, geom = "histogram")
+qplot(data$personal_accomplishment, geom = "histogram")
+```
