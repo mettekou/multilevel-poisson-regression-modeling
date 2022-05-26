@@ -9,10 +9,4 @@ author:
 date: "`r Sys.Date()`"
 documentclass: report
 papersize: a4
-output: 
-  bookdown::pdf_book:
-    latex_engine: xelatex
-    includes:
-      in_header: preamble.tex
-      before_body: titlepage.tex
 ---

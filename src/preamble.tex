@@ -1,30 +1,29 @@
-\usepackage{tikz}
-\usepackage{graphicx}
-
-\usepackage[abspath]{currfile}
-
-\setmainfont[
-Path          = \currfileabsdir,
-Ligatures     = TeX,
-UprightFont   = bin/fonts/UGentPannoText-Normal.otf,
-BoldFont      = bin/fonts/UGentPannoText-SemiBold.otf
-]{UGentPannoText}
-
-\setmonofont[
-Path          = \currfileabsdir,
-Ligatures     = TeX,
-UprightFont   = bin/fonts/iosevka-ss08-regular.ttf,
-BoldFont      = bin/fonts/iosevka-ss08-bold.ttf
-]{Iosevka}
-
-\setlength{\parindent}{0pt}
-
+\usepackage{tikz}%
+\graphicspath{{bin/images}}%
+%
+\usepackage[abspath]{currfile}%
+%
+\setmainfont[%
+  Path          = \currfileabsdir,%
+  Ligatures     = TeX,%
+  UprightFont   = bin/fonts/UGentPannoText-Normal.otf,%
+  BoldFont      = bin/fonts/UGentPannoText-SemiBold.otf%
+]{UGentPannoText}%
+%
+\setmonofont[%
+  Path          = \currfileabsdir,%
+  Ligatures     = TeX,%
+  UprightFont   = bin/fonts/iosevka-ss08-regular.ttf,%
+  BoldFont      = bin/fonts/iosevka-ss08-bold.ttf%
+]{Iosevka}%
+%
+\setlength{\parindent}{0pt}%
+%
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage[section]{placeins}
 \usepackage[toc, page]{appendix}%
 \usepackage{pdfpages}%
-\usepackage{etoolbox}%
 %
 \usepackage{xcolor}%
 %
@@ -34,23 +33,25 @@ BoldFont      = bin/fonts/iosevka-ss08-bold.ttf
 
 \usepackage[explicit]{titlesec}
 \titleformat{\chapter}
-  {\color{UGentBlue}\huge\MakeUppercase}
-  {}
-  {0pt}
-  {\underline{#1}}
+{\color{UGentBlue}\huge\MakeUppercase}
+{}
+{0pt}
+{\underline{#1}}
 
 \titleformat{\section}
-  {\Large\bfseries\color{UGentBlue}}
-  {}
-  {0pt}
-  {#1}
+{\Large\bfseries\color{UGentBlue}}
+{}
+{0pt}
+{#1}
 
 \titleformat{\subsection}
-  {\large\bfseries\color{UGentBlue}}
-  {}
-  {0pt}
-  {#1}
+{\large\bfseries\color{UGentBlue}}
+{}
+{0pt}
+{#1}
 
 \makeatletter % change only the display of \thepage, but not \thepage itself:
 \patchcmd{\ps@plain}{\thepage}{\textcolor{UGentBlue}{\thepage}}{}{}
 \makeatother
+
+\usepackage[a4paper]{geometry}
