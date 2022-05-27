@@ -1,0 +1,27 @@
+name: bookdown
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  bookdown:
+    name: render
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-pandoc@v2
+      - name: Restore environment
+        run: Rscript -e 'install.packages('renv'); renv::restore(confirm = FALSE)'
+      - name: Render book
+        run: Rscript -e 'bookdown::render_book("src/index.Rmd", "bookdown::pdf_book")'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: _main.pdf
+          path: out/_main.pdf
