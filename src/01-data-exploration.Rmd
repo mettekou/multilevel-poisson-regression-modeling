@@ -50,11 +50,11 @@ RN4CAST <-
 ## Univariate
 
 ```{r summary}
-summary(data)
+summary(RN4CAST)
 ```
 
 ```{r}
 library(ggplot2)
-qplot(data$work_environment_index, geom = "histogram")
-qplot(data$personal_accomplishment, geom = "histogram")
+qplot(RN4CAST$we, geom = "histogram")
+qplot(RN4CAST$pa, geom = "histogram")
 ```
