@@ -154,6 +154,21 @@ dic <- extract(JAGS.mod_uniform, what = "dic")
 # ped <- extract(JAGS.mod_uniform, what = "ped")
 ```
 
+```{r run-mod}
+# ?run.jags #run this for more information on the default settings
+JAGS.mod_uniform <- run.jags(
+    # specify the syntax file
+    "src/JAGSmodel0_inversegamma.txt",
+    # specify the data source (only necessary when write.data = FALSE)
+    data = RN4CAST_complete,
+    monitor = c("intercept", "unit_precision", "hosp_precision", "full_effect", "deviance"),
+    burnin = 4000, # make informed decision later (choosing speed here)
+    sample = 10000, # make informed decision later (choosing speed here)
+    method = "rjparallel"
+)
+dic <- extract(JAGS.mod_uniform, what = "dic")
+```
+
 The model ran, and we can inspect its results. 
 
 ```{r summary-mod}
