@@ -52,19 +52,22 @@ The distribution of PA is skewed, with only very few high values.
 RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
 ```
 
-This is where the best part comes in: the `template.jags` function in the `rjags` package. We can use the syntax of `lme4` to specify our mixed model, and then `template.jags` writes all the jags code *for* us! For example, to get the jags syntax for a mixed effects model predicting reduced personal accomplishment, with a fixed intercept, a random intercept for unit, and a random intercept for hospital, we run the chunk below.  
-
+Scale all non-factor covariates (except for hosp and unit which are indexes)
 ```{r scale}
 RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
 RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
 RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
 ```
 
+Here the `template.jags` function in the `rjags` package comes in. We can use the syntax of `lme4` to specify our mixed model, and then `template.jags` writes all the jags code. For example, to get the jags syntax for a mixed effects model predicting reduced personal accomplishment, with a fixed intercept, a random intercept for unit, and a random intercept for hospital, we run the chunk below.  
+
+
+Create model without covariates
 ```{r template0, message = FALSE, warning=FALSE}
 # ?template.jags #run this for more information on the default settings
 template_model0 <- template.jags(
     # lme4 syntax for a MEM predicting pa from a random intercept unit + hospital
-    formula = pa ~ (1 | unit) + (1 | hosp) + tech + teach + beds + unitsur + we + expe + full,
+    formula = pa ~ (1 | unit) + (1 | hosp),
     # specify data source
     data = RN4CAST_complete,
     # specify output file name for the template
@@ -76,22 +79,17 @@ template_model0 <- template.jags(
 )
 ```
 
-This creates a file for you, called `JAGSmodel0.txt`, in your current directory.
-Check it out!
-In it, we are given the complete `jags` syntax for a Poisson mixed effects model.
-You can run `?template.jags` to see the defaults of the function.
-Specifically, right now we set a $\text{Gamma}(0.001, .001)$ prior on the precision of the two random intercepts and a vague $\text{Normal}(0,10^{-6})$ prior on the fixed effects (in this case, a fixed intercept only). Another default is the number of chains (2), which we can always change.
+The model is written down in a file, called `JAGSmodel0.txt`, in our current directory.
+Specifically, right now (as by default) we set a $\text{Gamma}(0.001, .001)$ prior on the precision of the two random intercepts and a vague $\text{Normal}(0,10^{-6})$ prior on the fixed effects (in this case, a fixed intercept only). Another default is the number of chains (2), which we can always change.
 
-In the first part of the assignment, we're asked to run exactly this model, but instead we have to test what prior to put on the precision of the random intercepts: an inverse gamma or a uniform. In this case, let's say I want to set a $\text{Uniform}(0.001,100)$ prior (I'm just picking something randomly from one of the dissertation papers; this is something we still need to change, of course).
+In the first part of the assignment, we're asked to run exactly this model, but instead we have to test what prior to put on the precision of the random intercepts: an inverse gamma or a uniform. In this case, let's say we want to set a $\text{Uniform}(0.001,100)$ prior.
 Then, we run the following chunk to get the syntax for this model:
 
 ```{r template-uniform, message=FALSE, warning=FALSE}
 model0_unif <- template.jags(
-    formula = pa ~ (1 | unit) + (1 | hosp) + tech + teach + beds + unitsur + we + expe + full,
+    formula = pa ~ (1 | unit) + (1 | hosp),
     data = RN4CAST_complete,
     file = "JAGSmodel0_unif.txt",
-    # we have to decide here: what would be a good range for the uniform prior?
-    # any examples in class?
     precision.prior = "dunif(0.001, 100)", # make an informed decision later
     family = "poisson",
     write.data = FALSE,
@@ -99,9 +97,8 @@ model0_unif <- template.jags(
 )
 ```
 
-You can check out the created syntax to make sure it looks good, but another great thing about `runjags`: we can now just run the model directly from `R` without needing to manually copy/paste anything!
+We can now just run the model directly from `R` without needing to manually copy/paste anything.
 For this, we use the `run.jags` function to run the model we just specified our syntax for.
-Run `?run.jags` to get more information about the defaults of the function.
 
 ```{r run-mod}
 # ?run.jags #run this for more information on the default settings
@@ -127,7 +124,7 @@ dic <- extract(JAGS.mod_uniform, what = "dic")
 # ped <- extract(JAGS.mod_uniform, what = "ped")
 ```
 
-Et voila! The model ran, and we can inspect its results. 
+The model ran, and we can inspect its results. 
 
 ```{r summary-mod}
 summary(JAGS.mod_uniform)
@@ -138,7 +135,7 @@ summary(JAGS.mod_uniform)
 We can also visualize all the results easily. The different plot types are `plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
 You can also specify for which variable you want the plot.
 The different options are `vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
-You can read up more about `runjags` in the documentation here: <https://cran.r-project.org/web/packages/runjags/runjags.pdf>. 
+
 
 ```{r plot-function}
 # Convenience function for plotting
@@ -165,7 +162,6 @@ Our next steps are now the following:
 - We'll make an informed decision on the number of chains (`n.chains`) specified in `template.jags`
 - We'll make an informed decision on the number of burnin iterations and samples
 
-Again, please take a look at the documentation [here](https://cran.r-project.org/web/packages/runjags/runjags.pdf) and/or let us know if you find something else that's helpful. It would be great if we could all run some models before the next meeting :-D.
 
 ```{r}
 plot(JAGS.mod_uniform, layout = c(9, 4))
