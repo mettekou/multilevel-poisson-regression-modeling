@@ -52,13 +52,15 @@ The distribution of PA is skewed, with only very few high values.
 RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
 ```
 
-This is where the best part comes in: the `template.jags` function in the `rjags` package. We can use the syntax of `lme4` to specify our mixed model, and then `template.jags` writes all the jags code *for* us! For example, to get the jags syntax for a mixed effects model predicting reduced personal accomplishment, with a fixed intercept, a random intercept for unit, and a random intercept for hospital, we run the chunk below.  
-
+Scale all non-factor covariates (except for hosp and unit which are indexes)
 ```{r scale}
 RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
 RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
 RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
 ```
+
+This is where the best part comes in: the `template.jags` function in the `rjags` package. We can use the syntax of `lme4` to specify our mixed model, and then `template.jags` writes all the jags code *for* us! For example, to get the jags syntax for a mixed effects model predicting reduced personal accomplishment, with a fixed intercept, a random intercept for unit, and a random intercept for hospital, we run the chunk below.  
+
 
 ```{r template0, message = FALSE, warning=FALSE}
 # ?template.jags #run this for more information on the default settings
