@@ -107,15 +107,7 @@ JAGS.mod_uniform <- run.jags(
     model0_unif,
     # specify the data source (only necessary when write.data = FALSE)
     data = RN4CAST_complete,
-    monitor = c(
-        "intercept", "unit_precision", "hosp_precision", "beds_coefficient",
-        "we_coefficient",
-        "expe_coefficient",
-        "tech_effect",
-        "teach_effect",
-        "unitsur_effect",
-        "full_effect", "deviance"
-    ),
+    monitor = c("intercept", "unit_precision", "hosp_precision", "full_effect", "deviance"),
     burnin = 4000, # make informed decision later (choosing speed here)
     sample = 10000, # make informed decision later (choosing speed here)
     method = "rjparallel"
