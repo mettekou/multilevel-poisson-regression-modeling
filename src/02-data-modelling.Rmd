@@ -101,21 +101,6 @@ Here the `template.jags` function in the `rjags` package comes in. We can use th
 
 
 Create model without covariates
-```{r template0, message = FALSE, warning=FALSE}
-# ?template.jags #run this for more information on the default settings
-template_model0 <- template.jags(
-    # lme4 syntax for a MEM predicting pa from a random intercept unit + hospital
-    formula = pa ~ (1 | unit) + (1 | hosp),
-    # specify data source
-    data = RN4CAST_complete,
-    # specify output file name for the template
-    file = "JAGSmodel0.txt",
-    # specify Poisson model
-    family = "poisson",
-    # specify whether you want to write all observations to the template
-    write.data = FALSE
-)
-```
 
 The model is written down in a file, called `JAGSmodel0.txt`, in our current directory.
 Specifically, right now (as by default) we set a $\text{Gamma}(0.001, .001)$ prior on the precision of the two random intercepts and a vague $\text{Normal}(0,10^{-6})$ prior on the fixed effects (in this case, a fixed intercept only). Another default is the number of chains (2), which we can always change.
