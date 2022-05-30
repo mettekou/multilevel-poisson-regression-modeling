@@ -13,6 +13,10 @@ The random intercepts model we fit here partitions the total variance in varianc
 
 - **First, fit a model without the covariates and check convergence using classical diagnostics.**
 
+As we are asked to model the dependent variable personal accomplishment $Y$ as a Poisson random variable, we use the exponential link function to obtain the following equation:
+
+$$Y=e^{\beta_0+\epsilon_{h}+\epsilon_{h,u}+\epsilon_{h,u,n}}$$
+
 - **Rank the hospitals according to their random effect (in WinBUGS it is possible with the
 rank option). Are there hospitals with important differences in the PA baseline level?**
 
