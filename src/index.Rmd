@@ -1,5 +1,5 @@
 ---
-title: Multilevel Poisson Regression Modelling
+title: Multilevel Poisson Regression Modeling
 author:
     - Shilaan Alzahawi
     - Stijn Huysman
