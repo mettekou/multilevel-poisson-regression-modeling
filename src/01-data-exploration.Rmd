@@ -2,16 +2,26 @@
 
 ## Read data
 
-Second, we read in the RN4CAST data. (Adjust the file path if you need to).
+First, we install and load the R packages `here` and `runjags` if needed. Also, we load the `here` package.
+
+```{r install-pkg, eval=FALSE}
+install.packages("here")
+install.packages("runjags") 
+```
 
 ```{r}
 library(here) # Load here
 ```
 
+Second, we read in the RN4CAST data. (Adjust the file path if you need to). The original file had 2 extra (empty) columns. We deleted these beforehand.
+
 ```{r read-data}
-data_path <- "data/BurnoutPA.txt"
+data_path <- "../BurnoutPA.txt"
 RN4CAST <- read.delim(here(data_path))
 ```
+
+We then format the column types, based on the information provided in the assignment. 
+<!--- clean out commented text lines in code block --->
 
 ```{r load, echo=FALSE}
 library(readr)
@@ -47,14 +57,43 @@ RN4CAST <-
     )
 ```
 
+RN4NCAST has 1118 observations of the following variables:
+
+**Nurse level**
+
+-   `expe`: experience (years of employment)
+-   `full`: full time nurse indicator (0/1)
+-   `pa`: reduced personal accomplishment (PA) dimension of burnout
+    (higher values indicate a higher burnout / reduction in PA)
+
+**Nursing unit level**
+
+-   `unit`: a nursing unit identifier
+-   `unitsur`: surgical unit indicator (0/1)
+-   `we`: work environment index (higher values indicate a more positive
+    work environment)
+
+**Hospital level**
+
+-   `hosp`: a hospital identifier
+-   `tech`: technical hospital indicator (0/1)
+-   `teach`: teaching/university hospital indicator (0/1)
+-   `beds`: number of beds
+
 ## Univariate
+
+Provide univariate summary statistics of all variables, as well as histograms of pa.
 
 ```{r summary}
 summary(RN4CAST)
 ```
 
-```{r}
-library(ggplot2)
-qplot(RN4CAST$we, geom = "histogram")
-qplot(RN4CAST$pa, geom = "histogram")
+```{r hist, out.width="50%", fig.align='center'}
+hist(
+  RN4CAST$pa, 
+  main = "Histogram of Reduced Personal Accomplishment Score",
+  xlab = "Reduced Personal Accomplishment Score"
+  )
 ```
+
+The distribution of PA is skewed, with only very few high values.
