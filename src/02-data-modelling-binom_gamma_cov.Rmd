@@ -81,7 +81,7 @@ plot_jags("trace", "beds_coefficient")
 ```
 
 
-The trace plots for `unit_precision` and `hosp_precision` seem not so well.
+The trace plots for `unit_precision` and `hosp_precision` do not seem so well.
 The other trace plots seem ok. However, the plots for `tech`, `teach` and `beds` are somewhat zigzagging, thus indicating dependency.
 None of the plots get stuck.
 
@@ -139,9 +139,11 @@ plot_jags("trace", "teach_effect")
 plot_jags("trace", "beds_coefficient")
 ```
 
-<!--- TO BE UPDATED:
-The trace plots look fairly well, with some outliers. None of the trace plots get stuck.
---->
+The trace plots for `unit_precision` and `hosp_precision` still do  not seem so well.
+The other trace plots seem ok. However, the plots for `tech`, `teach` and `beds` are still somewhat zigzagging, thus indicating dependency.
+None of the plots get stuck.
+Because of the dependency in the `tech`, `teach` and `beds`, additional measures are required.
+<!--- What additional measures could we implement? --->
 
 ##### Assessment model
 
@@ -154,9 +156,7 @@ Then we inspect the results again.
 summary(JAGS.mod_binom_gamma_cov)
 ```
 
-<!--- TO BE UPDATED:
-The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. However, the MCMC error is still fairly large in comparison with the SD, ranging from 0.3 to 0.6. 
---->
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. However, the MCMC error is still fairly very large in comparison with the SD, ranging from 0.3 to 2.5. Additional measures (longer chain, accelerating measure) are necessary.
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
