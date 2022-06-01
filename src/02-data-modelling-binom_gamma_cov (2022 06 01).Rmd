@@ -103,13 +103,10 @@ dic_binom_gamma_cov <- extract(JAGS.mod_binom_gamma_cov, what = "dic")
 dic_binom_gamma_cov
 ```
 
-<!--- TO BE UPDATED:
 The results are the following:
-  
--   Mean deviance:  8895 
--   penalty 103.6 
--   Penalized deviance: 8999 
---->
+-   Mean deviance:  5543 
+-   penalty 889.2 
+-   Penalized deviance: 6432 
 
 #### Further expand model
 Extend model with additional samples (i.c. 30 000).
