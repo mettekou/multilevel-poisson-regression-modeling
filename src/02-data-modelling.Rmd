@@ -1,142 +1,185 @@
-# Data modelling
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
 
-## Set up 
+**Questions/tasks: Part 1: Although the variable PA does not correspond
+to count data, a Poisson model will be fitted for the purpose of this
+exercise.**
 
-First, we install and load the R packages `here` and `runjags`.
+**Fit a three-level Poisson random intercept model, with nursing unit
+representing the level 2 random intercept and hospital representing the
+level 3 random intercept. Assume normal distributions for the random
+intercepts.**
+
+-   **Take vague priors for all model parameters. Determine whether an
+    inverse gamma or a uniform prior is most appropriate for the
+    variability parameter of the random intercepts.**
+
+The random intercepts model we fit here partitions the total variance in
+variance between hospitals $\epsilon_{h}\sim N(0,\sigma_h^2)$, variance
+between units within a hospital
+$\epsilon_{h,u}\sim N(0,\sigma_{h,u}^2)$, and residual variance
+$\epsilon_{h,u,n}$.
+
+-   **First, fit a model without the covariates and check convergence
+    using classical diagnostics.**
+
+    As we are asked to model the dependent variable personal
+    accomplishment $Y$ as a Poisson random variable, we use the
+    exponential link function to obtain the following equation:
+
+    $$Y=e^{\beta_0+\epsilon_{h}+\epsilon_{h,u}+\epsilon_{h,u,n}}$$
+
+    -   **Rank the hospitals according to their random effect (in
+        WinBUGS it is possible with the rank option). Are there
+        hospitals with important differences in the PA baseline level?**
+
+    -   **In a second step, include the covariates. Are there hospitals
+        genuinely different with respect to the PA level after adjusting
+        for the covariates in the model?**
+
+    -   **Check with DIC whether the inclusion of the covariates
+        improves the fit with respect to the baseline model. Determine
+        what variables to include using this selection criterion.**
+
+    -   **Give all necessary posterior summary measures of the relevant
+        parameters.**
+
+    -   **Hint: Standardize all numeric covariates to improve
+        convergence of the MCMC procedure and give initial values to the
+        regression coefficients and parameters related to variances of
+        random effects.**
+
+    **Part 2: In some cases, there is overdispersion compared to what we
+    would be expect in a Poisson model.**
+
+    -   **Check whether a negative binomial distribution for PA is
+        better than a Poisson distribution.**
+
+    -   **Motivate your conclusion.**
+
+    ## Set up
+
+    First, we load the R package `runjags`.
+    <!--- delete loading `parallel` --->
 
 ```{r load-pkg, message = FALSE}
 library(parallel)
-library(runjags) # Load runjags
+library(runjags)
 ```
 
 ```{r}
 # set.seed(12345)
 ```
 
-We have the following variables:
-
-**Nurse level**
-
-- `expe`: experience (years of employment)
-- `full`: full time nurse indicator (0/1)
-- `pa`: reduced personal accomplishment (PA) dimension of burnout (higher values indicate a higher burnout / reduction in PA)
-
-**Nursing unit level**
-
-- `unit`: a nursing unit identifier
-- `unitsur`: surgical unit indicator (0/1)
-- `we`: work environment index (higher values indicate a more positive work environment)
-
-**Hospital level**
-
-- `hosp`: a hospital identifier
-- `tech`: technical hospital indicator (0/1)
-- `teach`: teaching/university hospital indicator (0/1)
-- `beds`: number of beds
-
-```{r hist, out.width="50%", fig.align='center'}
-hist(
-    RN4CAST$pa,
-    main = "Histogram of Reduced Personal Accomplishment Score",
-    xlab = "Reduced Personal Accomplishment Score"
-)
-```
-
-The distribution of PA is skewed, with only very few high values. 
+The distribution of PA is skewed, with only very few high values.
 
 ## Multilevel Poisson model using runjags
 
-`runjags` only works with complete data, so we first delete the missing values in personal accomplishment.
+```{=html}
+<!--- 
+Delete modification relating to complete cases since pa has no missing values ??
 
+`runjags` only works with complete data, so we first delete the missing
+values in personal accomplishment.
+--->
+```
 ```{r missing}
-RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
+# RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
+RN4CAST_complete <- RN4CAST
 ```
 
-Scale all non-factor covariates (except for hosp and unit which are indexes)
+Scale all non-factor covariates (except for hosp and unit which are
+indexes)
+
 ```{r scale}
 RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
 RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
 RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
 ```
 
-Here the `template.jags` function in the `rjags` package comes in. We can use the syntax of `lme4` to specify our mixed model, and then `template.jags` writes all the jags code. For example, to get the jags syntax for a mixed effects model predicting reduced personal accomplishment, with a fixed intercept, a random intercept for unit, and a random intercept for hospital, we run the chunk below.  
+Here the `template.jags` function in the `rjags` package comes in. We
+can use the syntax of `lme4` to specify our mixed model, and then
+`template.jags` writes all the jags code. For example, to get the jags
+syntax for a mixed effects model predicting reduced personal
+accomplishment, with a fixed intercept, a random intercept for unit, and
+a random intercept for hospital, we run the chunk below.
 
+### Model without covariates: uniform prior for precision
 
-Create model without covariates
-```{r template0, message = FALSE, warning=FALSE}
-# ?template.jags #run this for more information on the default settings
-template_model0 <- template.jags(
-    # lme4 syntax for a MEM predicting pa from a random intercept unit + hospital
-    formula = pa ~ (1 | unit) + (1 | hosp),
-    # specify data source
-    data = RN4CAST_complete,
-    # specify output file name for the template
-    file = "JAGSmodel0.txt",
-    # specify Poisson model
-    family = "poisson",
-    # specify whether you want to write all observations to the template
-    write.data = FALSE
-)
-```
+The model is written down in a file, called `JAGSmodel0.txt`, in our
+current directory. The default sets a $\text{Gamma}(0.001, .001)$ prior
+on the precision of the two random intercepts and a vague
+$\text{Normal}(0,10^{-6})$ prior on the fixed effects (in this case, a
+fixed intercept only). Another default is the number of chains (2)..
 
-The model is written down in a file, called `JAGSmodel0.txt`, in our current directory.
-Specifically, right now (as by default) we set a $\text{Gamma}(0.001, .001)$ prior on the precision of the two random intercepts and a vague $\text{Normal}(0,10^{-6})$ prior on the fixed effects (in this case, a fixed intercept only). Another default is the number of chains (2), which we can always change.
+In the first part of the assignment, we're asked to run exactly this
+model, but instead we have to test what prior to put on the precision of
+the random intercepts: an inverse gamma or a uniform.
 
-In the first part of the assignment, we're asked to run exactly this model, but instead we have to test what prior to put on the precision of the random intercepts: an inverse gamma or a uniform. In this case, let's say we want to set a $\text{Uniform}(0.001,100)$ prior.
-Then, we run the following chunk to get the syntax for this model:
+#### Pilot model
+
+##### Creating model
+
+First, let's asses performance with a a $\text{Uniform}(0.001,100)$
+prior. Then, we run the following chunk to get the syntax for a model
+with only the intercepts, a user-specified uniform prior for the
+precision, and 5 chains. The amount of chains is based on the generally
+accepted heuristic that 3-5 chains are needed for more complex models:
 
 ```{r template-uniform, message=FALSE, warning=FALSE}
 model0_unif <- template.jags(
-    formula = pa ~ (1 | unit) + (1 | hosp),
-    data = RN4CAST_complete,
-    file = "JAGSmodel0_unif.txt",
-    precision.prior = "dunif(0.001, 100)", # make an informed decision later
-    family = "poisson",
-    write.data = FALSE,
-    n.chains = detectCores() # make an informed decision later
+formula = pa ~ (1 | unit) + (1 | hosp),
+data = RN4CAST_complete,
+file = "JAGSmodel0_unif.txt",
+precision.prior = "dunif(0.001, 100)", # make an informed decision later
+family = "poisson",
+write.data = FALSE,
+n.chains = 5 
 )
 ```
 
-We can now just run the model directly from `R` without needing to manually copy/paste anything.
-For this, we use the `run.jags` function to run the model we just specified our syntax for.
+We can now just run the model directly from `R` without needing to
+manually copy/paste anything. For this, we use the `run.jags` function
+to run the model we just specified our syntax for. We choose a limited
+burn-in (4000) and sample (10000) to allow for an initial pilot run.
 
 ```{r run-mod}
 # ?run.jags #run this for more information on the default settings
 JAGS.mod_uniform <- run.jags(
-    # specify the syntax file
-    model0_unif,
-    # specify the data source (only necessary when write.data = FALSE)
-    data = RN4CAST_complete,
-    monitor = c("intercept", "unit_precision", "hosp_precision", "full_effect", "deviance"),
-    burnin = 4000, # make informed decision later (choosing speed here)
-    sample = 10000, # make informed decision later (choosing speed here)
-    method = "rjparallel"
+  # specify the syntax file
+  model0_unif,
+  # specify the data source (only necessary when write.data = FALSE)
+  data = RN4CAST_complete,
+  monitor = c("intercept", "unit_precision", "hosp_precision", "deviance"),
+  burnin = 4000, # make informed decision later (choosing speed here)
+  sample = 10000, # make informed decision later (choosing speed here)
+  # method = "rjparallel"
 )
-dic <- extract(JAGS.mod_uniform, what = "dic")
-# ped <- extract(JAGS.mod_uniform, what = "ped")
 ```
 
-The model ran, and we can inspect its results. 
+##### Visualization
 
-```{r summary-mod}
-summary(JAGS.mod_uniform)
-```
+Before assessing the model based through formal measures, we first do a
+visual inspection. Various plot types are available:
+`plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
+You can also specify for which variable you want the plot. The different
+options are
+`vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
 
-## Visualization
-
-We can also visualize all the results easily. The different plot types are `plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
-You can also specify for which variable you want the plot.
-The different options are `vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
-
+First we create a convenience function for plotting runjags objects.
 
 ```{r plot-function}
 # Convenience function for plotting
 plot_jags <- function(type, var) {
-    plot(JAGS.mod_uniform, plot.type = type, vars = var)
+  plot(JAGS.mod_uniform, plot.type = type, vars = var)
 }
 ```
 
-For example, here are all possible plots for the precision of the random intercept for unit:
+For example, here are all possible plots for the precision of the random
+intercept for unit:
 
 ```{r plots, message=FALSE, out.width="50%", fig.align='center'}
 plot_jags("trace", "unit_precision")
@@ -144,17 +187,48 @@ plot_jags("ecdf", "unit_precision")
 plot_jags("histogram", "unit_precision")
 plot_jags("autocorr", "unit_precision")
 plot_jags("crosscorr", NA)
+
+plot_jags("trace", "hosp_precision")
+plot_jags("ecdf", "hosp_precision")
+plot_jags("histogram", "hosp_precision")
+plot_jags("autocorr", "hosp_precision")
+plot_jags("crosscorr", NA)
 ```
 
-Our next steps are now the following:
+The autocorrelation seems limited: for `unit_precision`, the
+autocorrelation is almost zero at lag 15. For `hosp_precision`, this is
+even better. The trace plot for `unit_precision` looks fairly well,
+although there are still quite some outliers. For `hosp_precision`, the
+trace plot does not look so well.
 
-- Everyone should ideally try to read the documentation of `runjags` by the next meeting, so we know what we can and can't do
-- Everyone tries to get this set-up and run some models (ideally, the ones asked for)
-- We have to choose the parameters (range) of the uniform prior for the precision
-- We'll make an informed decision on the number of chains (`n.chains`) specified in `template.jags`
-- We'll make an informed decision on the number of burnin iterations and samples
+##### Assessment model
 
+The model ran, and we can inspect its results.
 
-```{r}
-plot(JAGS.mod_uniform, layout = c(9, 4))
+```{r summary-mod}
+summary(JAGS.mod_uniform)
 ```
+
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale
+reduction factor - PSRF) is close to 1 for both the unit_precision and
+the hosp_precision, which is the aim. However, the MCMC error is still
+fairly large in comparison with the SD (1.0 for unit_precision and 0.9
+for hosp_precision). Additional measures (longer chain, accelerating
+measure) are necessary.
+
+We subsequently obtain the DIC (Deviance Information Criterion) to
+assess the model performance.
+
+```{r dic}
+dic_uniform <- extract(JAGS.mod_uniform, what = "dic") 
+dic_uniform
+```
+
+The results are the following:
+
+-   Mean deviance: 8896
+-   penalty 103.8
+-   Penalized deviance: 9000
+
+#### Further expand model
+
