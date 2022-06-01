@@ -74,8 +74,6 @@ library(runjags)
 # set.seed(12345)
 ```
 
-The distribution of PA is skewed, with only very few high values.
-
 ## Multilevel Poisson model using runjags
 
 ```{=html}
