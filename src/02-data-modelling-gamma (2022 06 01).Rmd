@@ -129,3 +129,10 @@ We subsequently obtain the DIC (Deviance Information Criterion) to assess the mo
 dic_gamma <- extract(JAGS.mod_gamma, what = "dic") 
 dic_gamma
 ```
+
+The results are the following:
+-   Mean deviance:  8895 
+-   penalty 103.5 
+-   Penalized deviance: 8999 
+
+These are very similar to the results obtained for the shorter chains with the gamma priors. 
