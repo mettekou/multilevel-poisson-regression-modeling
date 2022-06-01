@@ -1,0 +1,131 @@
+### Model without covariates: gamma prior for precision
+We now assess whether 
+
+#### Pilot model
+
+##### Creating model
+
+First, let's asses performance with a $\text{Gamma}(0.001, .001)$ prior. This is the default prior for when runjags creates a Poisson model, as here. Then, we run the following chunk to get the syntax for a model with only the intercepts, the default gamma prior for the precision, and 5 chains. The amount of chains is based on the generally accepted heuristic that 3-5 chains are needed for more complex models:
+
+```{r template_gamma, message = FALSE, warning=FALSE}
+template_model_gamma <- template.jags(
+  formula = pa ~ (1 | unit) + (1 | hosp), 
+  data = RN4CAST_complete,   #specify data source
+  file = "JAGSmodel_gamma.txt",   #specify output file name for the template
+  family = "poisson",   #specify Poisson model
+  write.data = FALSE, #specify whether you want to write all observations to the template
+  n.chains = 5  # choose 5 chains
+)
+```
+
+
+
+We can now just run the model directly from `R` without needing to
+manually copy/paste anything. For this, we use the `run.jags` function
+to run the model we just specified our syntax for. We choose a limited
+burn-in (4000) and sample (10000) to allow for an initial pilot run.
+<!--- Should method=rjags be  used in original model design (see documentation extend.jags - then no need to recompile model when extending) --->
+
+(modify the source file if needed)
+  
+```{r run-mod}
+JAGS.mod_gamma <- run.jags(
+    "JAGSmodel_gamma.txt", # specify the syntax file
+    data = RN4CAST_complete, # specify the data source (only necessary when write.data = FALSE)
+    monitor = c("intercept", "unit_precision", "hosp_precision", "full_effect", "deviance"),
+    burnin = 4000, # make informed decision later (choosing speed here)
+    sample = 10000, # make informed decision later (choosing speed here)
+    method = "rjags"
+)
+```
+
+##### Visualization
+
+Before assessing the model based through formal measures, we first do a
+visual inspection. Various plot types are available:
+  `plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
+You can also specify for which variable you want the plot. The different
+options are
+`vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
+
+For example, here are the trace plots for the precision of the random
+intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
+  
+```{r traceplots, message=FALSE, out.width="50%", fig.align='center'}
+plot(JAGS.mod_gamma, plot.type = "trace", vars = "unit_precision")
+plot(JAGS.mod_gamma, plot.type = "trace", vars = "hosp_precision")
+```
+
+The trace plot for `unit_precision` looks not so great, with quite some outliers. For `hosp_precision`, the trace plot does not look so well either. There are many outliers.
+
+##### Assessment model
+
+The model ran, and we can inspect its results.
+
+```{r summary-mod}
+summary(JAGS.mod_gamma)
+```
+
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for both `unit_precision` and
+ `hosp_precision`, which is the aim. However, the MCMC error is still fairly large in comparison with the SD (0.9 for `unit_precision` and 1.4 for `hosp_precision`). Additional measures (longer chain, accelerating measure) are necessary.
+
+We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
+
+```{r dic_gamma}
+dic_gamma <- extract(JAGS.mod_gamma, what = "dic") 
+dic_gamma
+```
+
+The results are the following:
+  
+-   Mean deviance:  8896 
+-   penalty 103.5 
+-   Penalized deviance: 8999
+
+These results are very similar to those under uniform priors for the precision.
+
+#### Further expand model
+Extend model with additional samples (i.c. 30 000).
+
+```{r extend-mod}
+JAGS.mod_gamma <- extend.jags(
+  # model to extend
+  JAGS.mod_gamma,
+  # burnin = 4000, # No need to include additional burnin now (default = 0) since we expand instead of rerun model??
+  sample = 30000, # make informed decision later (choosing speed here)
+)
+```
+
+##### Visualization
+
+Perform visual inspection of trace plots for `unit_precision` and `hosp_precision` for extended model.
+<!--- using reference of previous code block ?? --->
+```{r traceplots-extend, ref.label='traceplots'}
+```
+
+```{r plots, message=FALSE, out.width="50%", fig.align='center'}
+plot(JAGS.mod_gamma, plot.type = "trace", vars = "unit_precision")
+plot(JAGS.mod_gamma, plot.type = "trace", vars = "hosp_precision")
+```
+
+The trace plots for `unit_precision` and `hosp_precision` did not change a lot.
+
+##### Assessment model
+
+Then we inspect the results again.
+<!--- using reference of previous code block ?? --->
+```{r summary-mod-extend, ref.label='summary-mod'}
+```
+
+```{r summary-mod}
+summary(JAGS.mod_gamma)
+```
+
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is still close to 1 for both `unit_precision` and `hosp_precision`, which is the aim. The MCMC error has also dropped substantially in comparison with the SD (0.5 for `unit_precision` and 0.7 for `hosp_precision`). 
+
+We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
+
+```{r dic_gamma}
+dic_gamma <- extract(JAGS.mod_gamma, what = "dic") 
+dic_gamma
+```
