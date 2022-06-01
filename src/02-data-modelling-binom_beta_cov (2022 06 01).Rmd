@@ -175,7 +175,3 @@ dic_binom_gamma_cov
 <!--- add results  --->
 
 
-```{r summary-mod}
-summary(JAGS.mod_binom_gamma_cov)
-```
-
