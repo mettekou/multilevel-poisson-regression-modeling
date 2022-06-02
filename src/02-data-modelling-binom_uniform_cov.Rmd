@@ -78,10 +78,7 @@ plot_jags("trace", "teach_effect")
 plot_jags("trace", "beds_coefficient")
 ```
 
-
-<!--- TO BE UPDATED: 
-  The trace plot seem fairly ok. There are still quite some outliers, but none of the plots get stuck.
---->
+The trace plot for `hosp_precision` shows that two chains do not converge and do not explore the entire distribution. The three other chains however converge well. The trace plots for `tech`, `teach` and `beds` seem to inhibit quite some dependency, i.e. they explore the entire distribution but slowly. The other plots converge well. None of the plots get stuck. 
   
   
 ##### Assessment model
@@ -140,9 +137,7 @@ plot_jags("trace", "teach_effect")
 plot_jags("trace", "beds_coefficient")
 ```
 
-<!--- TO BE UPDATED:
-  The trace plots look fairly well, with some outliers. None of the trace plots get stuck.
---->
+The trace plots remain the same as before expanding the model, although the dependency in the trace plots for `tech`, `teach` and `beds` is reduced.
   
 ##### Assessment model
   
@@ -154,10 +149,7 @@ Then we inspect the results again.
 ```{r summary-mod}
 summary(JAGS.mod_binom_uniform_cov)
 ```
-
-<!--- TO BE UPDATED:
-The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. However, the MCMC error is still fairly large in comparison with the SD, ranging from 0.3 to 0.6. 
---->
+The Gelman-Rubin ANOVA diagnostic is close to 1 for all parameters, which is the aim. Only for  `hosp_precision` it still amounts to 1.87. Also, the MCMC error remains fairly large in comparison with the SD, ranging from 0.3 to 2.5. Additional measures (longer chain, accelerating measure) are necessary.
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
@@ -167,8 +159,11 @@ dic_binom_uniform_cov <- extract(JAGS.mod_binom_uniform_cov, what = "dic")
 dic_binom_uniform_cov
 ```
 
+The results are the following
+- Mean deviance:  5546 
+- penalty 888.9 
+- Penalized deviance: 6435
 
-<!--- add results  --->
   
   
   
