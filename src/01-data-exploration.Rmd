@@ -57,7 +57,7 @@ RN4CAST <-
     )
 ```
 
-RN4NCAST has 1118 observations of the following variables:
+RN4NCAST has 1118 complete observations of the following variables:
 
 **Nurse level**
 
@@ -96,4 +96,4 @@ hist(
   )
 ```
 
-The distribution of PA is skewed, with only very few high values.
+The distribution of PA is positively skewed, with only very few high values.
