@@ -66,7 +66,7 @@ For example, here are the trace plots for the precision of the random
 intercept for unit (`unit_precision`) and for hospital (`hosp_precision`), 
 as well as for the covariates:
   
-  ```{r traceplots, message=FALSE, out.width="50%", fig.align='center'}
+```{r traceplots, message=FALSE, out.width="50%", fig.align='center'}
 plot_jags("trace", "unit_precision")
 plot_jags("trace", "hosp_precision")
 plot_jags("trace", "expe_coefficient")
@@ -92,10 +92,9 @@ The model ran, and we can inspect its results.
 summary(JAGS.mod_binom_uniform_cov)
 ```
 
-<!--- TO BE UPDATED:
-The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. However, the MCMC error is still fairly large in comparison with the SD, ranging from 0.5 to 1.2. Additional measures (longer chain, accelerating measure) are necessary.
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. Only for  `hosp_precision` it amounts to 1.92. Also, the MCMC error is still fairly large in comparison with the SD, ranging from 0.5 to 5.0. Additional measures (longer chain, accelerating measure) are necessary.
 
---->
+
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
   
 ```{r dic}
@@ -103,13 +102,12 @@ dic_binom_uniform_cov <- extract(JAGS.mod_binom_uniform_cov, what = "dic")
 dic_binom_uniform_cov
 ```
 
-<!--- TO BE UPDATED:
-  The results are the following:
+The results are the following:
   
--   Mean deviance:  8895 
--   penalty 103.6 
--   Penalized deviance: 8999 
---->
+- Mean deviance:  5545 
+- penalty 889 
+- Penalized deviance: 6434
+
   
 #### Further expand model
 Extend model with additional samples (i.c. 30 000).
