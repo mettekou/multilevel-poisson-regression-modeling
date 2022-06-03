@@ -59,7 +59,7 @@ RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
 RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
 ```
 
-RN4NCAST has 1118 observations of the following variables:
+RN4NCAST has 1118 complete observations of the following variables:
 
 **Nurse level**
 
@@ -98,7 +98,7 @@ hist(
 )
 ```
 
-The distribution of PA is skewed, with only very few high values.
+The distribution of PA is positively skewed, with only very few high values.
 
 ```{r}
 burn_in_iterations <- 4000
