@@ -4,20 +4,16 @@
 
 First, we install and load the R packages `here` and `runjags` if needed. Also, we load the `here` package.
 
-```{r install-pkg, eval=FALSE}
-install.packages("here")
-install.packages("runjags") 
-```
 
 ```{r}
 library(here) # Load here
+library(runjags)
 ```
 
 Second, we read in the RN4CAST data. (Adjust the file path if you need to). The original file had 2 extra (empty) columns. We deleted these beforehand.
 
 ```{r read-data}
-data_path <- "../BurnoutPA.txt"
-RN4CAST <- read.delim(here(data_path))
+data_path <- "data/BurnoutPA.txt"
 ```
 
 We then format the column types, based on the information provided in the assignment. 
@@ -37,9 +33,9 @@ library(readr)
 #     "fulltime",
 #     "personal_accomplishment"
 # )
-RN4CAST <-
+RN4CAST_complete <- (RN4CAST <-
     read_table(
-        data_path,
+        here(data_path),
         col_names = TRUE,
         # col_names = column_names,
         col_types = cols(
@@ -54,7 +50,13 @@ RN4CAST <-
             col_factor(),
             col_integer()
         )
-    )
+    ))
+```
+
+```{r scale}
+RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
+RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
+RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
 ```
 
 RN4NCAST has 1118 complete observations of the following variables:
@@ -88,12 +90,18 @@ Provide univariate summary statistics of all variables, as well as histograms of
 summary(RN4CAST)
 ```
 
-```{r hist, out.width="50%", fig.align='center'}
+```{r, out.width="50%", fig.align='center'}
 hist(
-  RN4CAST$pa, 
-  main = "Histogram of Reduced Personal Accomplishment Score",
-  xlab = "Reduced Personal Accomplishment Score"
-  )
+    RN4CAST$pa,
+    main = "Histogram of Reduced Personal Accomplishment Score",
+    xlab = "Reduced Personal Accomplishment Score"
+)
 ```
 
 The distribution of PA is positively skewed, with only very few high values.
+
+```{r}
+burn_in_iterations <- 4000
+sample_iterations <- 10000
+more_sample_iterations <- 30000
+```

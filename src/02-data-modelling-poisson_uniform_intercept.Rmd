@@ -65,7 +65,7 @@ $\epsilon_{h,u,n}$.
     First, we load the R package `runjags`.
     <!--- delete loading `parallel` --->
 
-```{r load-pkg, message = FALSE}
+```{r, message = FALSE}
 library(parallel)
 library(runjags)
 ```
@@ -84,7 +84,7 @@ Delete modification relating to complete cases since pa has no missing values ??
 values in personal accomplishment.
 --->
 ```
-```{r missing}
+```{r}
 # RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
 RN4CAST_complete <- RN4CAST
 ```
@@ -92,7 +92,7 @@ RN4CAST_complete <- RN4CAST
 Scale all non-factor covariates (except for hosp and unit which are
 indexes)
 
-```{r scale}
+```{r}
 RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
 RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
 RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
@@ -127,15 +127,15 @@ with only the intercepts, a user-specified uniform prior for the
 precision, and 5 chains. The amount of chains is based on the generally
 accepted heuristic that 3-5 chains are needed for more complex models:
 
-```{r template-uniform, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 model0_unif <- template.jags(
-formula = pa ~ (1 | unit) + (1 | hosp),
-data = RN4CAST_complete,
-file = "JAGSmodel0_unif.txt",
-precision.prior = "dunif(0.001, 100)", # make an informed decision later
-family = "poisson",
-write.data = FALSE,
-n.chains = 5 
+    formula = pa ~ (1 | unit) + (1 | hosp),
+    data = RN4CAST_complete,
+    file = "JAGSmodel0_unif.txt",
+    precision.prior = "dunif(0.001, 100)", # make an informed decision later
+    family = "poisson",
+    write.data = FALSE,
+    n.chains = 5
 )
 ```
 
@@ -145,17 +145,17 @@ to run the model we just specified our syntax for. We choose a limited
 burn-in (4000) and sample (10000) to allow for an initial pilot run.
 <!--- Should method=rjags be  used in original model design (see documentation extend.jags - then no need to recompile model when extending) --->
 
-```{r run-mod}
+```{r cache=TRUE}
 # ?run.jags #run this for more information on the default settings
 JAGS.mod_uniform <- run.jags(
-  # specify the syntax file
-  model0_unif,
-  # specify the data source (only necessary when write.data = FALSE)
-  data = RN4CAST_complete,
-  monitor = c("intercept", "unit_precision", "hosp_precision", "deviance"),
-  burnin = 4000, # make informed decision later (choosing speed here)
-  sample = 10000, # make informed decision later (choosing speed here)
-  method = "rjags" 
+    # specify the syntax file
+    model0_unif,
+    # specify the data source (only necessary when write.data = FALSE)
+    data = RN4CAST_complete,
+    monitor = c("intercept", "unit_precision", "hosp_precision", "deviance"),
+    burnin = burn_in_iterations, # make informed decision later (choosing speed here)
+    sample = sample_iterations, # make informed decision later (choosing speed here)
+    method = "rjags"
 )
 ```
 
@@ -170,17 +170,18 @@ options are
 
 First we create a convenience function for plotting runjags objects.
 
-```{r plot-function}
+```{r}
 # Convenience function for plotting
 plot_jags <- function(type, var) {
-  plot(JAGS.mod_uniform, plot.type = type, vars = var)
+    plot(JAGS.mod_uniform, plot.type = type, vars = var)
+    dev.off()
 }
 ```
 
 For example, here are the trace plots for the precision of the random
 intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
 
-```{r traceplots, message=FALSE, out.width="50%", fig.align='center'}
+```{r, message=FALSE, out.width="50%", fig.align='center'}
 plot_jags("trace", "unit_precision")
 plot_jags("trace", "hosp_precision")
 ```
@@ -195,7 +196,7 @@ trace plot does not look so well.
 
 The model ran, and we can inspect its results.
 
-```{r summary-mod}
+```{r}
 summary(JAGS.mod_uniform)
 ```
 
@@ -209,8 +210,8 @@ measure) are necessary.
 We subsequently obtain the DIC (Deviance Information Criterion) to
 assess the model performance.
 
-```{r dic}
-dic_uniform <- extract(JAGS.mod_uniform, what = "dic") 
+```{r}
+dic_uniform <- extract(JAGS.mod_uniform, what = "dic")
 dic_uniform
 ```
 
@@ -223,12 +224,12 @@ The results are the following:
 #### Further expand model
 Extend model with additional samples (i.c. 30 000).
 
-```{r extend-mod}
+```{r}
 JAGS.mod_uniform <- extend.jags(
-  # model to extend
-  JAGS.mod_uniform,
-  # burnin = 4000, # No need to include additional burnin now (default = 0) since we expand instead of rerun model??
-  sample = 30000, # make informed decision later (choosing speed here)
+    # model to extend
+    JAGS.mod_uniform,
+    # burnin = burn_in_iterations, # No need to include additional burnin now (default = 0) since we expand instead of rerun model??
+    sample = more_sample_iterations, # make informed decision later (choosing speed here)
 )
 ```
 
@@ -236,10 +237,10 @@ JAGS.mod_uniform <- extend.jags(
 
 Perform visual inspection of trace plots for `unit_precision` and `hosp_precision` for extended model.
 <!--- using reference of previous code block does not seem to work --->
-```{r traceplots-extend, ref.label=c('traceplots')}
+```{r-extend, ref.label=c('traceplots')}
 ```
 
-```{r plots, message=FALSE, out.width="50%", fig.align='center'}
+```{r, message=FALSE, out.width="50%", fig.align='center'}
 plot_jags("trace", "unit_precision")
 plot_jags("trace", "hosp_precision")
 ```
@@ -252,10 +253,10 @@ trace plot does not look so well. There still seem to be quite some outlying val
 
 Then we inspect the results again.
 <!--- using reference of previous code block does not seem to work --->
-```{r summary-mod-extend, ref.label='summary-mod'}
+```{r-extend, ref.label='summary-mod'}
 ```
 
-```{r summary-mod}
+```{r}
 summary(JAGS.mod_uniform)
 ```
 The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale
@@ -267,8 +268,8 @@ for ´hosp_precision`).
 We subsequently obtain the DIC (Deviance Information Criterion) to
 assess the model performance.
 <!--- using references?? --->
-```{r dic}
-dic_uniform <- extract(JAGS.mod_uniform, what = "dic") 
+```{r}
+dic_uniform <- extract(JAGS.mod_uniform, what = "dic")
 dic_uniform
 ```
 
@@ -278,8 +279,10 @@ dic_uniform
 #### Rank hospitals
 Apply `fitted` function to the `runjags` object. This obtains estimates for the random effects, both for `unit_precision` and `hosp_precision`.
 ``` {r fitted}
-fitted = fitted(object = JAGS.mod_uniform,
-                show.summary = TRUE)
+fitted <- fitted(
+    object = JAGS.mod_uniform,
+    show.summary = TRUE
+)
 ``` 
 This results in the following output (20 min computing time):
 """
@@ -304,6 +307,6 @@ Hence, this seems to yield a combined result (so combining all intercepts to obt
 However, extracting the samplers yields 159 nodes, i.e. intercept, hosp_randomeffect[1] up until hosp_randomeffect[30] and unit_randomeffect[1] up until unit_randomeffect[126], unit_precision and hosp_precision. So perhaps we can extract using these nodes
 
 ``` {r ranked_nodes}
-ranked_samplers = extract(JAGS.mod_uniform, what = "samplers")
+ranked_samplers <- extract(JAGS.mod_uniform, what = "samplers")
 ranked_samplers
 ```
