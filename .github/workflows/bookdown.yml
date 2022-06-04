@@ -16,9 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2
+      - name: Install TeX Live
+        run: sudo apt install texlive
       - uses: r-lib/actions/setup-pandoc@v2
       - name: Install JAGS
-        run: sudo apt-get install pkg-config jags
+        run: sudo apt-get install jags
       - uses: r-lib/actions/setup-renv@v2
       - name: Render book
         run: Rscript -e 'bookdown::render_book("src/index.Rmd", "bookdown::pdf_book")'
