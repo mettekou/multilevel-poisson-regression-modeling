@@ -68,6 +68,7 @@ $\epsilon_{h,u,n}$.
 ```{r, message = FALSE}
 library(parallel)
 library(runjags)
+library("dplyr")  # used for arrange(), to rank hospitals
 ```
 
 ```{r}
