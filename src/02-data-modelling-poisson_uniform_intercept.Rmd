@@ -77,14 +77,7 @@ library("dplyr")  # used for arrange(), to rank hospitals
 
 ## Multilevel Poisson model using runjags
 
-```{=html}
-<!--- 
-Delete modification relating to complete cases since pa has no missing values ??
 
-`runjags` only works with complete data, so we first delete the missing
-values in personal accomplishment.
---->
-```
 ```{r}
 # RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
 RN4CAST_complete <- RN4CAST
