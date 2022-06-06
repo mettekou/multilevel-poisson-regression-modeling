@@ -160,7 +160,7 @@ plot_jags <- function(type, var) {
 }
 ```
 
-For example, here are the trace plots for the precision of the random
+For example, here are the trace plots and autocorrelation plots for the precision of the random
 intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
 
 ```{r, message=FALSE, out.width="50%", fig.align='center'}
