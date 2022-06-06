@@ -1,5 +1,5 @@
 ### Model without covariates: gamma prior for precision
-We now assess whether 
+We now assess whether an inverse gamma prior would be a better prior.
 
 #### Pilot model
 
