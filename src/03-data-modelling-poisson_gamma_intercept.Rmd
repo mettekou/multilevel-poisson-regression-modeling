@@ -8,14 +8,15 @@ We now assess whether
 First, let's asses performance with a $\text{Gamma}(0.001, .001)$ prior. This is the default prior for when runjags creates a Poisson model, as here. Then, we run the following chunk to get the syntax for a model with only the intercepts, the default gamma prior for the precision, and 5 chains. The amount of chains is based on the generally accepted heuristic that 3-5 chains are needed for more complex models:
 
 ```{r template_gamma, message = FALSE, warning=FALSE}
-template_model_gamma <- template.jags(
-  formula = pa ~ (1 | unit) + (1 | hosp),
-  data = RN4CAST_complete, # specify data source
-  file = "JAGSmodel_gamma.txt", # specify output file name for the template
-  family = "poisson", # specify Poisson model
-  write.data = FALSE, # specify whether you want to write all observations to the template
-  n.chains = 5 # choose 5 chains
-)
+# template_model_gamma <- template.jags(
+#   formula = pa ~ (1 | unit) + (1 | hosp),
+#   data = RN4CAST_complete, # specify data source
+#   file = "JAGSmodel_gamma.txt", # specify output file name for the template
+#   family = "poisson", # specify Poisson model
+#   write.data = FALSE, # specify whether you want to write all observations to the template
+#   n.chains = 5 # choose 5 chains
+# )
+#This does not work because you cannot specify an inverse gamma directly using template.jags
 ```
 
 
@@ -30,7 +31,8 @@ burn-in (4000) and sample (10000) to allow for an initial pilot run.
   
 ```{r cache=TRUE}
 JAGS.mod_gamma <- run.jags(
-  "JAGSmodel_gamma.txt", # specify the syntax file
+  #Note: reading in modified source file
+  "src/JAGSmodel0_inversegamma.txt", # specify the modified syntax file
   data = RN4CAST_complete, # specify the data source (only necessary when write.data = FALSE)
   monitor = c("intercept", "unit_precision", "hosp_precision", "full_effect", "deviance"),
   burnin = burn_in_iterations, # make informed decision later (choosing speed here)
@@ -69,7 +71,8 @@ summary(JAGS.mod_gamma)
 ```
 
 The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for both `unit_precision` and
- `hosp_precision`, which is the aim. However, the MCMC error is still fairly large in comparison with the SD (0.9 for `unit_precision` and 1.4 for `hosp_precision`). Additional measures (longer chain, accelerating measure) are necessary.
+ `hosp_precision`, which is the aim. However, the MCMC error is still fairly large in comparison with the SD (0.9 for both `unit_precision` and `hosp_precision`). Additional measures (longer chain, accelerating measure) are necessary.
+
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
@@ -80,9 +83,9 @@ dic_gamma
 
 The results are the following:
   
--   Mean deviance:  8896 
--   penalty 103.5 
--   Penalized deviance: 8999
+-   Mean deviance:  8886 
+-   penalty 124.6 
+-   Penalized deviance: 9010
 
 These results are very similar to those under uniform priors for the precision.
 
@@ -125,7 +128,7 @@ Then we inspect the results again.
 summary(JAGS.mod_gamma)
 ```
 
-The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is still close to 1 for both `unit_precision` and `hosp_precision`, which is the aim. The MCMC error has also dropped substantially in comparison with the SD (0.5 for `unit_precision` and 0.7 for `hosp_precision`). 
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is still close to 1 for both `unit_precision` and `hosp_precision`, which is the aim. The MCMC error has also dropped substantially in comparison with the SD (0.5 for both `unit_precision` and for `hosp_precision`). 
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
@@ -135,8 +138,8 @@ dic_gamma
 ```
 
 The results are the following:
--   Mean deviance:  8895 
--   penalty 103.5 
--   Penalized deviance: 8999 
+-   Mean deviance:  8886 
+-   penalty 124.4 
+-   Penalized deviance: 9010 
 
 These are very similar to the results obtained for the shorter chains with the gamma priors. 
