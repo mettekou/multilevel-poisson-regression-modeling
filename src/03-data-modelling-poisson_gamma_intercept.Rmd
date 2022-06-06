@@ -49,8 +49,7 @@ summary(JAGS.mod_gamma)
 ```
 
 The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for both `unit_precision` and
- `hosp_precision`, which is the aim. However, the MCMC error is still fairly large in comparison with the SD (0.9 for both `unit_precision` and `hosp_precision`). Additional measures (longer chain, accelerating measure) are necessary.
-
+ `hosp_precision`, which is the aim. Also, the MCMC error is small in comparison with the SD (0.6% for both `unit_precision` and `hosp_precision`).
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
@@ -61,11 +60,11 @@ dic_gamma
 
 The results are the following:
   
--   Mean deviance:  8886 
--   penalty 124.6 
--   Penalized deviance: 9010
+- Mean deviance:  8892 
+- penalty 122.9 
+- Penalized deviance: 9015 
 
-These results are very similar to those under uniform priors for the precision.
+These results are worse than those obtained under uniform priors for the precision, although this is mainly due to the higher penalty term (given that the IG prior is a more complex modelled prior than the uniform prior used earlier).
 
 #### Further expand model
 Extend model with additional samples (i.c. 30 000).
