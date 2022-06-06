@@ -68,7 +68,8 @@ $\epsilon_{h,u,n}$.
 ```{r, message = FALSE}
 library(parallel)
 library(runjags)
-library("dplyr")  # used for arrange(), to rank hospitals
+library(dplyr)  # used for arrange(), to rank hospitals
+library(mcmcplots) #for running mean plot
 ```
 
 ```{r}
@@ -168,12 +169,14 @@ plot_jags("trace", "unit_precision")
 plot_jags("autocorr", "unit_precision")
 plot_jags("trace", "hosp_precision")
 plot_jags("autocorr", "hosp_precision")
+rmeanplot(JAGS.mod_uniform, parms = "unit_precision")
 ```
 
 The autocorrelation seems limited: for `unit_precision`, the
 autocorrelation is almost zero at lag 15. For `hosp_precision`, this is
 even better. The trace plot for `unit_precision` looks fairly well, although
-there is limited dependency (indicated by the "zigzagging"). 
+there is limited dependency (indicated by the "zigzagging"). Yet, the running
+mean plot seems to indicate a constant mean. 
 For `hosp_precision`, the trace plot is similar although there seems to 
 be an upper cap depending on the range of the prior (i.c. 100).
 
