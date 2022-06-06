@@ -204,9 +204,9 @@ dic_uniform
 
 The results are the following:
 
--   Mean deviance: 8896
--   penalty 103.8
--   Penalized deviance: 9000
+- Mean deviance:  8896 
+- penalty 102.8 
+- Penalized deviance: 8999 
 
 #### Further expand model
 Extend model with additional samples (i.c. 30 000).
