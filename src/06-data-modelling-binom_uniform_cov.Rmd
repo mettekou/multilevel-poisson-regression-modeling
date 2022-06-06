@@ -78,6 +78,16 @@ plot_jags("trace", "we_coefficient")
 plot_jags("trace", "tech_effect")
 plot_jags("trace", "teach_effect")
 plot_jags("trace", "beds_coefficient")
+
+plot_jags("autocorr", "unit_precision")
+plot_jags("autocorr", "hosp_precision")
+plot_jags("autocorr", "expe_coefficient")
+plot_jags("autocorr", "full_effect")
+plot_jags("autocorr", "unitsur_effect")
+plot_jags("autocorr", "we_coefficient")
+plot_jags("autocorr", "tech_effect")
+plot_jags("autocorr", "teach_effect")
+plot_jags("autocorr", "beds_coefficient")
 ```
 
 
@@ -140,6 +150,16 @@ plot_jags("trace", "we_coefficient")
 plot_jags("trace", "tech_effect")
 plot_jags("trace", "teach_effect")
 plot_jags("trace", "beds_coefficient")
+
+plot_jags("autocorr", "unit_precision")
+plot_jags("autocorr", "hosp_precision")
+plot_jags("autocorr", "expe_coefficient")
+plot_jags("autocorr", "full_effect")
+plot_jags("autocorr", "unitsur_effect")
+plot_jags("autocorr", "we_coefficient")
+plot_jags("autocorr", "tech_effect")
+plot_jags("autocorr", "teach_effect")
+plot_jags("autocorr", "beds_coefficient")
 ```
 
 <!--- TO BE UPDATED:
