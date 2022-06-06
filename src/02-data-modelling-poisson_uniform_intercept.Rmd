@@ -78,11 +78,6 @@ library("dplyr")  # used for arrange(), to rank hospitals
 ## Multilevel Poisson model using runjags
 
 
-```{r}
-# RN4CAST_complete <- RN4CAST[!is.na(RN4CAST$pa), ] # Delete missing values in pa
-RN4CAST_complete <- RN4CAST
-```
-
 
 Here the `template.jags` function in the `rjags` package comes in. We
 can use the syntax of `lme4` to specify our mixed model, and then
