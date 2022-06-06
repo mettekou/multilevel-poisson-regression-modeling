@@ -53,7 +53,9 @@ intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
   
 ```{r, message=FALSE, out.width="50%", fig.align='center'}
 plot(JAGS.mod_gamma, plot.type = "trace", vars = "unit_precision")
+plot(JAGS.mod_gamma, plot.type = "autocorr", vars = "unit_precision")
 plot(JAGS.mod_gamma, plot.type = "trace", vars = "hosp_precision")
+plot(JAGS.mod_gamma, plot.type = "autocorr", vars = "hosp_precision")
 ```
 
 The trace plot for `unit_precision` looks not so great, with quite some outliers. For `hosp_precision`, the trace plot does not look so well either. There are many outliers.
@@ -105,7 +107,9 @@ Perform visual inspection of trace plots for `unit_precision` and `hosp_precisio
 
 ```{r, message=FALSE, out.width="50%", fig.align='center'}
 plot(JAGS.mod_gamma, plot.type = "trace", vars = "unit_precision")
+plot(JAGS.mod_gamma, plot.type = "autocorr", vars = "unit_precision")
 plot(JAGS.mod_gamma, plot.type = "trace", vars = "hosp_precision")
+plot(JAGS.mod_gamma, plot.type = "autocorr", vars = "hosp_precision")
 ```
 
 The trace plots for `unit_precision` and `hosp_precision` did not change a lot.
