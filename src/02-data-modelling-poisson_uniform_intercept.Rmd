@@ -113,7 +113,7 @@ model0_unif <- template.jags(
     formula = pa ~ (1 | unit) + (1 | hosp),
     data = RN4CAST_complete,
     file = "JAGSmodel0_unif.txt",
-    precision.prior = "dunif(0.001, 100)", # make an informed decision later
+    precision.prior = "dunif(0.001, 1000)", # make an informed decision later
     family = "poisson",
     write.data = FALSE,
     n.chains = 5
