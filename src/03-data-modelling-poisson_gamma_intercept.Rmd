@@ -5,26 +5,9 @@ We now assess whether an inverse gamma prior would be a better prior.
 
 ##### Creating model
 
-First, let's asses performance with a $\text{Gamma}(0.001, .001)$ prior. This is the default prior for when runjags creates a Poisson model, as here. Then, we run the following chunk to get the syntax for a model with only the intercepts, the default gamma prior for the precision, and 5 chains. The amount of chains is based on the generally accepted heuristic that 3-5 chains are needed for more complex models:
+We manually adapt the previous model to use an inverse gamma prior for the precision instead of a uniform prior ("JAGSmodel0_inversegamma.txt"). We apply this manual process, since `runjags` does not allow to directly specify an inverse gamma prior using `template.jags`.
 
-```{r template_gamma, message = FALSE, warning=FALSE}
-# template_model_gamma <- template.jags(
-#   formula = pa ~ (1 | unit) + (1 | hosp),
-#   data = RN4CAST_complete, # specify data source
-#   file = "JAGSmodel_gamma.txt", # specify output file name for the template
-#   family = "poisson", # specify Poisson model
-#   write.data = FALSE, # specify whether you want to write all observations to the template
-#   n.chains = 5 # choose 5 chains
-# )
-#This does not work because you cannot specify an inverse gamma directly using template.jags
-```
-
-
-
-We can now just run the model directly from `R` without needing to
-manually copy/paste anything. For this, we use the `run.jags` function
-to run the model we just specified our syntax for. We choose a limited
-burn-in (4000) and sample (10000) to allow for an initial pilot run.
+We again use the `run.jags` function to run the model we just specified our syntax for. We choose a limited burn-in (4000) and sample (10000) to allow for an initial pilot run. 
 <!--- Should method=rjags be  used in original model design (see documentation extend.jags - then no need to recompile model when extending) --->
 
 (modify the source file if needed)
