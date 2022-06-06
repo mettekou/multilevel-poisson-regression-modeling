@@ -134,7 +134,7 @@ JAGS.mod_uniform <- run.jags(
     # specify the data source (only necessary when write.data = FALSE)
     data = RN4CAST_complete,
     monitor = c("intercept", "unit_precision", "hosp_precision", "deviance",
-    "hosp_randomeffect"), # monitoro additionally all intercepts of random effect of hospitals
+    "hosp_randomeffect"), # monitor additionally all intercepts of random effect of hospitals
     burnin = burn_in_iterations, # make informed decision later (choosing speed here)
     sample = sample_iterations, # make informed decision later (choosing speed here)
     method = "rjags"
