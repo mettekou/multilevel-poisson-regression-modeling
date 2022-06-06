@@ -187,13 +187,12 @@ The model ran, and we can inspect its results.
 ```{r}
 summary(JAGS.mod_uniform)
 ```
-
+Since the visual inspection yields stable results, we proceed to more formal measures.
 The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale
-reduction factor - PSRF) is close to 1 for both the unit_precision and
-the hosp_precision, which is the aim. However, the MCMC error is still
-fairly large in comparison with the SD (1.0 for unit_precision and 0.9
-for hosp_precision). Additional measures (longer chain, accelerating
-measure) are necessary.
+reduction factor - PSRF) is close to 1 for both the `unit_precision` and
+the `hosp_precision`, which is the aim. The MCMC error is also limited
+in comparison with the SD (1.0% for `unit_precision` and 0.9%
+for `hosp_precision`). 
 
 We subsequently obtain the DIC (Deviance Information Criterion) to
 assess the model performance.
