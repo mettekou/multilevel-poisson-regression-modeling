@@ -274,36 +274,11 @@ dic_uniform
 
 
 #### Rank hospitals
-Apply `fitted` function to the `runjags` object. This obtains estimates for the random effects, both for `unit_precision` and `hosp_precision`.
-``` {r fitted}
-fitted <- fitted(
-    object = JAGS.mod_uniform,
-    show.summary = TRUE
-)
-``` 
-This results in the following output (20 min computing time):
-"""
-JAGS model summary statistics from 50000 samples (chains = 5; adapt+burnin = 46000):
-                                                                                                              
-                        Lower95 Median Upper95   Mean      SD Mode     MCerr MC%ofSD SSeff       AC.10    psrf
-regression_fitted[1]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[2]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[3]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[4]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[5]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[6]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[7]     10.942 13.232  15.652 13.276  1.2037   --  0.010955     0.9 12073   0.0090693  1.0004
-regression_fitted[8]     6.3145 7.8954  9.4956 7.9223 0.81592   -- 0.0091939     1.1  7876    0.042947  1.0006
-regression_fitted[9]     6.3145 7.8954  9.4956 7.9223 0.81592   -- 0.0091939     1.1  7876    0.042947  1.0006
-...
- [ reached getOption("max.print") -- omitted 1029 rows ]
-"""
+``` {r ranked}
+hosp_randomeffects <- add.summary(JAGS.mod_uniform, vars = "hosp_randomeffect") # obtain hosp_randomeffects out 
+hosp_randomeffects_means <-  data.frame(print(hosp_randomeffects))["Mean"] # transform runjags.object to dataframe to enable further handling
+hosp_randomeffects_ranked <- arrange(hosp_randomeffects_means, hosp_randomeffects_means$Mean) # sort intercepts
 
-Hence, this seems to yield a combined result (so combining all intercepts to obtain a fit). The fits are the same for each nurse in the same hospital and in the same hospital unit (f.e. the first unit has 7 nurses, so 7 identical estimates). It is unclear how to obtain specific estimates for random intercept for each hospital.
-
-However, extracting the samplers yields 159 nodes, i.e. intercept, hosp_randomeffect[1] up until hosp_randomeffect[30] and unit_randomeffect[1] up until unit_randomeffect[126], unit_precision and hosp_precision. So perhaps we can extract using these nodes
-
-``` {r ranked_nodes}
-ranked_samplers <- extract(JAGS.mod_uniform, what = "samplers")
-ranked_samplers
+print(hosp_randomeffects_ranked)
+hist(hosp_randomeffects_ranked$Mean)
 ```
