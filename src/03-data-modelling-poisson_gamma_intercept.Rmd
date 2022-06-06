@@ -20,21 +20,15 @@ JAGS.mod_gamma <- run.jags(
   monitor = c("intercept", "unit_precision", "hosp_precision", "full_effect", "deviance"),
   burnin = burn_in_iterations, # make informed decision later (choosing speed here)
   sample = sample_iterations, # make informed decision later (choosing speed here)
-  method = "rjags"
+  method = "rjags",
+  n.chains = 5
 )
 ```
 
 ##### Visualization
 
-Before assessing the model based through formal measures, we first do a
-visual inspection. Various plot types are available:
-  `plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
-You can also specify for which variable you want the plot. The different
-options are
-`vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
-
-For example, here are the trace plots for the precision of the random
-intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
+Before assessing the model based through formal measures, we first do a visual inspection as we did for the previous model.
+For example, here are the trace plots and autocorrelation pltos for the precision of the random intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
   
 ```{r, message=FALSE, out.width="50%", fig.align='center'}
 plot(JAGS.mod_gamma, plot.type = "trace", vars = "unit_precision")
