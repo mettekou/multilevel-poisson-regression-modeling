@@ -44,7 +44,7 @@ The trace plots for `unit_precision` and for `hosp_precision` look well.
 
 The model ran, and we can inspect its results.
 
-```{r-3}
+```{r -3}
 summary(JAGS.mod_gamma)
 ```
 
@@ -54,7 +54,7 @@ The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction fact
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
-```{r_gamma}
+```{r _gamma}
 dic_gamma <- extract(JAGS.mod_gamma, what = "dic")
 dic_gamma
 ```
