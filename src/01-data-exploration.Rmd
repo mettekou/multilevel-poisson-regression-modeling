@@ -20,7 +20,7 @@ We then format the column types, based on the information provided in the assign
 <!--- clean out commented text lines in code block --->
 
 ```{r load, echo=FALSE}
-library(readr)
+library(readr) 
 # column_names <- c(
 #     "hosp",
 #     "unit",
@@ -34,7 +34,7 @@ library(readr)
 #     "personal_accomplishment"
 # )
 RN4CAST_complete <- (RN4CAST <-
-    read_table(
+    read_table( #read_table has as default skip_empty_rows = TRUE, so only rows without missing data are read in
         here(data_path),
         col_names = TRUE,
         # col_names = column_names,
