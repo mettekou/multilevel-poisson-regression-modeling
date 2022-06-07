@@ -52,13 +52,7 @@ JAGS.mod_uniform_cov <- run.jags(
 ##### Visualization
 
 Before assessing the model based through formal measures, we first do a
-visual inspection. Various plot types are available:
-  `plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
-You can also specify for which variable you want the plot. The different
-options are
-`vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
-
-First we create a convenience function for plotting runjags objects.
+visual inspection as done before. First we create a convenience function for plotting runjags objects.
 
 ```{r}
 # Convenience function for plotting
@@ -67,7 +61,7 @@ plot_jags <- function(type, var) {
 }
 ```
 
-For example, here are the trace plots for the precision of the random
+For example, here are the trace plots and autocorrelation plots for the precision of the random
 intercept for unit (`unit_precision`) and for hospital (`hosp_precision`), 
 as well as for the covariates:
   
