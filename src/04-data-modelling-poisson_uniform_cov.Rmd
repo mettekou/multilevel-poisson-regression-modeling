@@ -106,7 +106,7 @@ The model ran, and we can inspect its results.
 summary(JAGS.mod_uniform_cov)
 ```
 
-The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. However, the MCMC error is still fairly large in comparison with the SD, ranging from 0.5 to 1.2. Additional measures (longer chain, accelerating measure) are necessary.
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. The MCMC error is small in comparison with the SD, ranging from 0.5 to 1.2.
 
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
