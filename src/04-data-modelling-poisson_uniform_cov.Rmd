@@ -95,16 +95,14 @@ rmeanplot(JAGS.mod_uniform_cov, parms = "teach_effect")
 rmeanplot(JAGS.mod_uniform_cov, parms = "beds_coefficient")
 ```
 
-"""
 The trace plots seem to be ok. None of the plots get stuck. For the covariates, the trace plots seem to indicate some dependency (i.e. "zigzagging" mean). However, running means plots show that the mean remains stable. Autocorrelation does not seem to be an issue. The autocorrelation generally reaches 0 at lag10 or lag15. The autocorrelation for `unit_precision` reaches 0 at lag25. 
 
-"""
 
 ##### Assessment model
 
 The model ran, and we can inspect its results.
 
-```{r-4}
+```{r -4}
 summary(JAGS.mod_uniform_cov)
 ```
 
