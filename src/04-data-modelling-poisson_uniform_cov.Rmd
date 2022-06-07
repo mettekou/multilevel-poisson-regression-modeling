@@ -63,7 +63,7 @@ plot_jags <- function(type, var) {
 
 For example, here are the trace plots and autocorrelation plots for the precision of the random
 intercept for unit (`unit_precision`) and for hospital (`hosp_precision`), 
-as well as for the covariates:
+as well as the effects for the covariates:
   
 ```{r, message=FALSE, out.width="50%", fig.align='center'}
 plot_jags("trace", "unit_precision")
@@ -85,10 +85,18 @@ plot_jags("autocorr", "we_coefficient")
 plot_jags("autocorr", "tech_effect")
 plot_jags("autocorr", "teach_effect")
 plot_jags("autocorr", "beds_coefficient")
+
+rmeanplot(JAGS.mod_uniform_cov, parms = "expe_coefficient")
+rmeanplot(JAGS.mod_uniform_cov, parms = "full_effect")
+rmeanplot(JAGS.mod_uniform_cov, parms = "unitsur_effect")
+rmeanplot(JAGS.mod_uniform_cov, parms = "we_coefficient")
+rmeanplot(JAGS.mod_uniform_cov, parms = "tech_effect")
+rmeanplot(JAGS.mod_uniform_cov, parms = "teach_effect")
+rmeanplot(JAGS.mod_uniform_cov, parms = "beds_coefficient")
 ```
 
 """
-The trace plot seem fairly ok. There are still quite some outliers, but none of the plots get stuck.
+The trace plots seem to be ok. None of the plots get stuck. For the covariates, the trace plots seem to indicate some dependency (i.e. "zigzagging" mean). However, running means plots show that the mean remains stable. Autocorrelation does not seem to be an issue. The autocorrelation generally reaches 0 at lag10 or lag15. The autocorrelation for `unit_precision` reaches 0 at lag25. 
 
 """
 
