@@ -274,3 +274,14 @@ hosp_randomeffects_ranked <- arrange(hosp_randomeffects_means, hosp_randomeffect
 print(hosp_randomeffects_ranked)
 hist(hosp_randomeffects_ranked$Mean)
 ```
+```{r}
+library(ggmcmc)
+# convert the model as mcmc for convinience of extracting plots and ranking
+mcmc.uniform_sample<-as.mcmc(JAGS.mod_uniform)
+mcmc.sample<-ggs(mcmc.uniform_sample)
+
+# ranking the hospitals 
+jpeg("catapillar.jpeg",quality=100)
+ggs_caterpillar(mcmc.sample,family=c("hosp_randomeffect"))
+
+```
