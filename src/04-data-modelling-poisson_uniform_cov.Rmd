@@ -121,19 +121,6 @@ The results are the following:
 -   penalty 103.6 
 -   Penalized deviance: 8999 
 
-
-#### Further expand model
-Extend model with additional samples (i.c. 30 000).
-
-```{r}
-JAGS.mod_uniform_cov <- extend.jags(
-  # model to extend
-  JAGS.mod_uniform_cov,
-  # burnin = burn_in_iterations, # No need to include additional burnin now (default = 0) since we expand instead of rerun model??
-  sample = more_sample_iterations, # make informed decision later (choosing speed here)
-)
-```
-
 ##### Visualization
 
 Perform visual inspection of trace plots for extended model.

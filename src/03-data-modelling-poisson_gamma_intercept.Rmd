@@ -66,18 +66,6 @@ The results are the following:
 
 These results are worse than those obtained under uniform priors for the precision, although this is mainly due to the higher penalty term (given that the IG prior is a more complex modelled prior than the uniform prior used earlier).
 
-#### Further expand model
-Extend model with additional samples (i.c. 30 000).
-
-```{r}
-JAGS.mod_gamma <- extend.jags(
-  # model to extend
-  JAGS.mod_gamma,
-  # burnin = burn_in_iterations, # No need to include additional burnin now (default = 0) since we expand instead of rerun model??
-  sample = more_sample_iterations, # make informed decision later (choosing speed here)
-)
-```
-
 ##### Visualization
 
 Perform visual inspection of trace plots for `unit_precision` and `hosp_precision` for extended model.
