@@ -21,30 +21,6 @@ max_chains <- 5
 n_chains <- max_chains#min(detectCores(), max_chains)
 ```
 
-# Research question
-In this analysis, we build various Bayesian hierarchical models to assess data obtained through the RN4CAST study. This is a a 3-year project (2009–2011) nurse workforce study involving 33,731 registered nurses in 2169 nursing units in 486 hospitals in 12 European countries. For more information on the RN4CAST study, see Sermeus et al. (2011).[[1] Sermeus W, Aiken L, Van den Heede K, Rafferty A, Griffiths P, Moreno-Casbas M, Busse R, Lindqvist R, Scott A, Bruyneel L, Brzostek T, Kinnunen J, Schubert M, Schoonhoven L, Zikos D, RN4CAST consortium. Nurse forecasting in Europe (RN4CAST): rationale, design and methodology. BMC Nursing 2011; 10(1):6.][1]
-For this project, the analysis is limited to data from 30 Belgian hospitals. 
-
-The data are hierarchical with the nurses nested in nursing units nested in hospitals. The outcome variable is the reduced personal accomplishment (PA) dimension of burnout. It measures the feelings of reduced competence and successful achievement in the tasks the nurse is performing. High values of this measure indicate strong burnout.
-Some covariates were recorded at the three levels of the data to predict the PA:
-- Nurse level: experience (years of employment), full time nurse (0=no, 1=yes)
-- Nursing unit level: surgical unit (1=yes, 0=no), work environment index, high values reflect a positive environment
-- Hospital level: technical hospital (1=yes,0=no), teaching/university hospital (1=yes,0=no), number of beds
-
-# Preprocessing and data exploration
-The data file (i.e. `burnoutPA.txt`) contained two empty columns, which we deleted. 
-
-# Data exploration
-
-## Read data
-
-First, we install and load the R packages `here` and `runjags` if needed. Also, we load the `here` package.
-
-Second, we read in the RN4CAST data. (Adjust the file path if you need to). The original file had 2 extra (empty) columns. We deleted these beforehand.
-
-We then format the column types, based on the information provided in the assignment. 
-<!--- clean out commented text lines in code block --->
-
 ```{r load}
 RN4CAST_complete <- (RN4CAST <-
     read_table( # read_table has as default skip_empty_rows = TRUE, so only rows without missing data are read in
@@ -64,49 +40,6 @@ RN4CAST_complete <- (RN4CAST <-
         )
     ))
 ```
-
-The RN4CAST dataset has 1118 observations of the following variables and the following 10 variables:
-
-**Nurse level**
-
--   `expe`: experience (years of employment)
--   `full`: full time nurse indicator (0/1)
--   `pa`: reduced personal accomplishment (PA) dimension of burnout (higher values indicate a higher burnout / reduction in PA)
-
-**Nursing unit level**
-
--   `unit`: a nursing unit identifier
--   `unitsur`: surgical unit indicator (0/1)
--   `we`: work environment index (higher values indicate a more positive work environment)
-
-**Hospital level**
-
--   `hosp`: a hospital identifier
--   `tech`: technical hospital indicator (0/1)
--   `teach`: teaching/university hospital indicator (0/1)
--   `beds`: number of beds
-
-We recoded the data for the various variables where necessary (e.g. to obtain factors and integer values). 
-Visual inspection of the outcome variable PA showed that the distribution of PA is skewed, with only very few large values.
-Since we will apply vague priors, we standardise the continuous variables `expe`, `we` and `beds`.
-
-## Univariate
-
-Provide univariate summary statistics of all variables, as well as histograms of pa.
-
-```{r summary}
-summary(RN4CAST)
-```
-
-```{r, out.width="50%", fig.align='center'}
-hist(
-    RN4CAST$pa,
-    main = "Histogram of Reduced Personal Accomplishment Score",
-    xlab = "Reduced Personal Accomplishment Score"
-)
-```
-
-The distribution of PA is positively skewed, with only very few high values.
 
 ```{r scale}
 RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
