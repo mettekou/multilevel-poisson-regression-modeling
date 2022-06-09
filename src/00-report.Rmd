@@ -68,7 +68,135 @@ As we are asked to model the dependent variable personal accomplishment $Y$ as a
 
 $$\log(Y)=\beta_0+\epsilon_{h}+\epsilon_{h,u}+\epsilon_{h,u,n}$$
 
+Here the `template.jags` function in the `rjags` package comes in. We
+can use the syntax of `lme4` to specify our mixed model, and then
+`template.jags` writes all the jags code. For example, to get the jags
+syntax for a mixed effects model predicting reduced personal
+accomplishment, with a fixed intercept, a random intercept for unit, and
+a random intercept for hospital, we run the chunk below.
+
+### Model without covariates: uniform prior for precision
+
+The model is written down in a file, called `JAGSmodel0.txt`, in our
+current directory. The default sets a $\text{Gamma}(0.001, .001)$ prior
+on the precision of the two random intercepts and a vague
+$\text{Normal}(0,10^{-6})$ prior on the fixed effects (in this case, a
+fixed intercept only). Another default is the number of chains (2)..
+
+In the first part of the assignment, we're asked to run exactly this
+model, but instead we have to test what prior to put on the precision of
+the random intercepts: an inverse gamma or a uniform.
+
+#### Pilot model
+
+##### Creating model
+
+First, let's asses performance with a a $\text{Uniform}(0.001,100)$
+prior. Then, we run the following chunk to get the syntax for a model
+with only the intercepts, a user-specified uniform prior for the
+precision, and 5 chains. The amount of chains is based on the generally
+accepted heuristic that 3-5 chains are needed for more complex models:
+
+We can now just run the model directly from `R` without needing to
+manually copy/paste anything. For this, we use the `run.jags` function
+to run the model we just specified our syntax for. We choose a limited
+burn-in (4000) and sample (10000) to allow for an initial pilot run.
+<!--- Should method=rjags be  used in original model design (see documentation extend.jags - then no need to recompile model when extending) --->
+
+```{r}
+JAGS.mod_uniform <- run.jags(
+    "JAGSmodel0_unif.txt",
+    data = RN4CAST_complete,
+    monitor = c("intercept", "unit_precision", "hosp_precision", "deviance",
+    "hosp_randomeffect"), # monitor additionally all intercepts of random effect of hospitals
+    burnin = burn_in_iterations,
+    sample = sample_iterations,
+    method = "rjags",
+    n.chains = n_chains
+)
+```
+
+##### Visualization
+
+Before assessing the model based through formal measures, we first do a
+visual inspection. Various plot types are available:
+`plot.type = c("trace", "ecdf", "histogram", "autocorr", "crosscorr")`.
+You can also specify for which variable you want the plot. The different
+options are
+`vars = c("intercept", "unit_precision", "hosp_precision", "deviance", "resid.sum.sq")`.
+
+First we create a convenience function for plotting runjags objects.
+
+```{r}
+# Convenience function for plotting
+plot_jags <- function(type, var) {
+    plot(JAGS.mod_uniform, plot.type = type, vars = var)
+    dev.off()
+}
+```
+
+For example, here are the trace plots and autocorrelation plots for the precision of the random
+intercept for unit (`unit_precision`) and for hospital (`hosp_precision`):
+
+```{r, out.width="50%", fig.align='center'}
+plot_jags("trace", "unit_precision")
+plot_jags("autocorr", "unit_precision")
+plot_jags("trace", "hosp_precision")
+plot_jags("autocorr", "hosp_precision")
+rmeanplot(JAGS.mod_uniform, parms = "unit_precision")
+```
+
+The autocorrelation seems limited: for `unit_precision`, the
+autocorrelation is almost zero at lag 15. For `hosp_precision`, this is
+even better. The trace plot for `unit_precision` looks fairly well, although
+there is limited dependency (indicated by the "zigzagging"). Yet, the running
+mean plot seems to indicate a constant mean. 
+For `hosp_precision`, the trace plot is similar although there seems to 
+be an upper cap depending on the range of the prior (i.c. 100).
+
+##### Assessment model
+
+The model ran, and we can inspect its results.
+
+```{r, results = TRUE}
+JAGS.mod_uniform
+```
+Since the visual inspection yields stable results, we proceed to more formal measures.
+The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale
+reduction factor - PSRF) is close to 1 for both the `unit_precision` and
+the `hosp_precision`, which is the aim. The MCMC error is also limited
+in comparison with the SD (1.0% for `unit_precision` and 0.9%
+for `hosp_precision`). 
+
+We subsequently obtain the DIC (Deviance Information Criterion) to
+assess the model performance.
+
+```{r, results = TRUE}
+dic_uniform <- extract.runjags(JAGS.mod_uniform, what = "dic")
+dic_uniform
+```
+
 - **Rank the hospitals according to their random effect (in WinBUGS it is possible with the rank option). Are there hospitals with important differences in the PA baseline level?**
+
+``` {r ranked}
+hosp_randomeffects <- add.summary(JAGS.mod_uniform, vars = "hosp_randomeffect") # obtain hosp_randomeffects out 
+hosp_randomeffects_means <-  data.frame(print(hosp_randomeffects))["Mean"] # transform runjags.object to dataframe to enable further handling
+hosp_randomeffects_ranked <- arrange(hosp_randomeffects_means, hosp_randomeffects_means$Mean) # sort intercepts
+
+print(hosp_randomeffects_ranked)
+hist(hosp_randomeffects_ranked$Mean)
+```
+```{r}
+library(ggmcmc)
+# convert the model as mcmc for convinience of extracting plots and ranking
+mcmc.uniform_sample<-as.mcmc(JAGS.mod_uniform)
+mcmc.sample<-ggs(mcmc.uniform_sample)
+
+# ranking the hospitals 
+jpeg("catapillar.jpeg",quality=100)
+ggs_caterpillar(mcmc.sample,family=c("hosp_randomeffect"))
+
+```
 
 - **In a second step, include the covariates. Are there hospitals genuinely different with respect to the PA level after adjusting for the covariates in the model?**
 

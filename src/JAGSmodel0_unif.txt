@@ -1,0 +1,59 @@
+######################################################################################################
+######################################################################################################
+#### JAGS model file written by runjags version 2.2.1-7 on 2022-06-09 20:26:07 
+######################################################################################################
+######################################################################################################
+
+### Model template as follows - ensure this is syntactically correct before running the model!
+
+model{
+
+# In the BUGS/JAGS language we must use an explicit for loop:
+for(i in 1:1118){
+	# These lines describe the response distribution and linear model terms:
+	pa[i] ~ dpois(regression_fitted[i])
+	regression_residual[i] <- pa[i] - regression_fitted[i]
+	log(regression_fitted[i]) <- intercept + unit_randomeffect[unit[i]] + hosp_randomeffect[hosp[i]] 
+}
+
+# These lines give the prior distributions for the parameters to be estimated:
+intercept ~ dnorm(0, 10^-6)
+for(unit_iterator in 1:126){
+	unit_randomeffect[unit_iterator] ~ dnorm(0, unit_precision)
+}
+invtau ~ dunif(0.001, 3000)
+unit_precision <- 1/invtau
+for(hosp_iterator in 1:30){
+	hosp_randomeffect[hosp_iterator] ~ dnorm(0, hosp_precision)
+}
+invtau2 ~ dunif(0.001, 3000)
+hosp_precision <- 1/invtau2
+resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
+
+}
+
+# These lines are hooks to be read by runjags (they are ignored by JAGS):
+#monitor# intercept, unit_precision, hosp_precision, deviance, dic, resid.sum.sq
+#modules# glm on
+#response# pa
+#residual# regression_residual
+#fitted# regression_fitted
+
+######################################################################################################
+######################################################################################################
+#### Initial values 
+######################################################################################################
+######################################################################################################
+
+
+
+
+######################################################################################################
+######################################################################################################
+#### Data 
+######################################################################################################
+######################################################################################################
+
+
+######################################################################################################
+######################################################################################################
