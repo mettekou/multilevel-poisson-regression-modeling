@@ -1,0 +1,288 @@
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, results = FALSE, cache = TRUE)
+```
+
+```{r libraries}
+library(here) # Load here
+library(readr)
+library(parallel)
+library(runjags)
+library(dplyr) # used for arrange(), to rank hospitals
+library(mcmcplots) # for running mean plot
+```
+
+```{r globals}
+data_path <- "data/BurnoutPA.txt"
+burn_in_iterations <- 4000
+sample_iterations <- 10000
+more_sample_iterations <- 30000
+method <- "rjags"
+max_chains <- 5
+n_chains <- max_chains#min(detectCores(), max_chains)
+```
+
+# Research question
+In this analysis, we build various Bayesian hierarchical models to assess data obtained through the RN4CAST study. This is a a 3-year project (2009–2011) nurse workforce study involving 33,731 registered nurses in 2169 nursing units in 486 hospitals in 12 European countries. For more information on the RN4CAST study, see Sermeus et al. (2011).[[1] Sermeus W, Aiken L, Van den Heede K, Rafferty A, Griffiths P, Moreno-Casbas M, Busse R, Lindqvist R, Scott A, Bruyneel L, Brzostek T, Kinnunen J, Schubert M, Schoonhoven L, Zikos D, RN4CAST consortium. Nurse forecasting in Europe (RN4CAST): rationale, design and methodology. BMC Nursing 2011; 10(1):6.][1]
+For this project, the analysis is limited to data from 30 Belgian hospitals. 
+
+The data are hierarchical with the nurses nested in nursing units nested in hospitals. The outcome variable is the reduced personal accomplishment (PA) dimension of burnout. It measures the feelings of reduced competence and successful achievement in the tasks the nurse is performing. High values of this measure indicate strong burnout.
+Some covariates were recorded at the three levels of the data to predict the PA:
+- Nurse level: experience (years of employment), full time nurse (0=no, 1=yes)
+- Nursing unit level: surgical unit (1=yes, 0=no), work environment index, high values reflect a positive environment
+- Hospital level: technical hospital (1=yes,0=no), teaching/university hospital (1=yes,0=no), number of beds
+
+# Preprocessing and data exploration
+The data file (i.e. `burnoutPA.txt`) contained two empty columns, which we deleted. 
+
+# Data exploration
+
+## Read data
+
+First, we install and load the R packages `here` and `runjags` if needed. Also, we load the `here` package.
+
+Second, we read in the RN4CAST data. (Adjust the file path if you need to). The original file had 2 extra (empty) columns. We deleted these beforehand.
+
+We then format the column types, based on the information provided in the assignment. 
+<!--- clean out commented text lines in code block --->
+
+```{r load}
+RN4CAST_complete <- (RN4CAST <-
+    read_table( # read_table has as default skip_empty_rows = TRUE, so only rows without missing data are read in
+        here(data_path),
+        col_names = TRUE,
+        col_types = cols(
+            col_integer(),
+            col_integer(),
+            col_factor(),
+            col_factor(),
+            col_integer(),
+            col_factor(),
+            col_double(),
+            col_double(),
+            col_factor(),
+            col_integer()
+        )
+    ))
+```
+
+The RN4CAST dataset has 1118 observations of the following variables and the following 10 variables:
+
+**Nurse level**
+
+-   `expe`: experience (years of employment)
+-   `full`: full time nurse indicator (0/1)
+-   `pa`: reduced personal accomplishment (PA) dimension of burnout (higher values indicate a higher burnout / reduction in PA)
+
+**Nursing unit level**
+
+-   `unit`: a nursing unit identifier
+-   `unitsur`: surgical unit indicator (0/1)
+-   `we`: work environment index (higher values indicate a more positive work environment)
+
+**Hospital level**
+
+-   `hosp`: a hospital identifier
+-   `tech`: technical hospital indicator (0/1)
+-   `teach`: teaching/university hospital indicator (0/1)
+-   `beds`: number of beds
+
+We recoded the data for the various variables where necessary (e.g. to obtain factors and integer values). 
+Visual inspection of the outcome variable PA showed that the distribution of PA is skewed, with only very few large values.
+Since we will apply vague priors, we standardise the continuous variables `expe`, `we` and `beds`.
+
+## Univariate
+
+Provide univariate summary statistics of all variables, as well as histograms of pa.
+
+```{r summary}
+summary(RN4CAST)
+```
+
+```{r, out.width="50%", fig.align='center'}
+hist(
+    RN4CAST$pa,
+    main = "Histogram of Reduced Personal Accomplishment Score",
+    xlab = "Reduced Personal Accomplishment Score"
+)
+```
+
+The distribution of PA is positively skewed, with only very few high values.
+
+```{r scale}
+RN4CAST_complete$beds <- c(scale(RN4CAST_complete$beds))
+RN4CAST_complete$we <- c(scale(RN4CAST_complete$we))
+RN4CAST_complete$expe <- c(scale(RN4CAST_complete$expe))
+```
+
+# Questions
+
+## Part 1
+
+**Although the variable PA does not correspond to count data, a Poisson model will be
+fitted for the purpose of this exercise.**
+
+**Fit a three-level Poisson random intercept model, with nursing unit representing the level 2
+random intercept and hospital representing the level 3 random intercept. Assume normal
+distributions for the random intercepts.**
+
+- **Take vague priors for all model parameters. Determine whether an inverse gamma or a uniform prior is most appropriate for the variability parameter of the random intercepts.**
+
+The random intercepts model we fit here partitions the total variance in variance between hospitals $\epsilon_{h}\sim N(0,\sigma_h^2)$, variance between units within a hospital $\epsilon_{h,u}\sim N(0,\sigma_{h,u}^2)$, and residual variance $\epsilon_{h,u,n}$.
+
+- **First, fit a model without the covariates and check convergence using classical diagnostics.**
+
+As we are asked to model the dependent variable personal accomplishment $Y$ as a Poisson random variable, we use the exponential link function to obtain the following equation:
+
+$$\log(Y)=\beta_0+\epsilon_{h}+\epsilon_{h,u}+\epsilon_{h,u,n}$$
+
+- **Rank the hospitals according to their random effect (in WinBUGS it is possible with the rank option). Are there hospitals with important differences in the PA baseline level?**
+
+- **In a second step, include the covariates. Are there hospitals genuinely different with respect to the PA level after adjusting for the covariates in the model?**
+
+- **Check with DIC whether the inclusion of the covariates improves the fit with respect to the baseline model. Determine what variables to include using this selection criterion.**
+
+- **Give all necessary posterior summary measures of the relevant parameters.**
+
+- **Hint: Standardize all numeric covariates to improve convergence of the MCMC procedure and give initial values to the regression coefficients and parameters related to variances of random effects.**
+
+## Part 2
+**In some cases, there is overdispersion compared to what we would be expect in a Poisson model.**
+
+- **Check whether a negative binomial distribution for PA is better than a Poisson distribution.**
+
+- **Motivate your conclusion.**
+
+
+
+
+
+[1]: https://bmcnurs.biomedcentral.com/articles/10.1186/1472-6955-10-6 "Sermeus et al. (2011)."
+
+to me , these are the topics on the agenda:
+
+Please find included , my RMD output in Word, so we could copy / paste some output in the overleaf?/word, if that is helpful.
+
+
+ 
+
+
+ 
+
+PART 1
+
+ 
+
+Introduction as added by Leah, what procedure to follow , ...
+
+2 models next to each other  
+
+Q1 : Determine whether an inverse gamma or a
+uniform prior is most appropriate for the variability parameter of the random intercepts.
+
+
+ 
+
+DONE = 3 level intercept model is fittined with 2 prior choices
+TO DO = answer the question about most 'appropiate' precision prior. (my opionion, this is also a theoretical thing : is Inverse Gamma kind of "conjugate?
+
+TO DO : read spiegelhalter Paper on ... why inverse gamma make sense, but not using
+
+ 
+
+Q2 : CONVERGENCE CHECK
+DONE = summary output available
+TO DO : SUMMARIZING and we report howto, based on BGR diagnostics, trace plot insights,      and the lag autocorrelation
+
+classical diagnostics : just as in frequence, HIGHLIGHT diag : MCMC error , 
+
+ 
+summary printout  (in table) + comment it
+ 
+discuss 1. MCMC error (under 5%) + PSRF => BGR diagnostic measurement / effective SS
+ 
+
+Q3:Rank the hospitals according to their random
+this is our rank we tried out + the plot as proposed by Leah??
+
+matrix by Niels => +/- same, 
+
+to look for caterpillarplot and the output object  that Niels got for his matrix
+
+do we know the 'real' impact on PA of the Random Effect hospital ,(considering scaling) 
+
+mention the scaling we did => all effects are around 0 +/- ...
+
+ 
+
+Q4 : with Covariates :
+Report model, report plots and convergence stats, .... => SO FAR = THE MODELS ARE BUILT WITH ALL COVARIATES
+DONE = MODEL WITH ALL COVARS BUILD
+
+TO DO = output of full model and create catterpillar plot + matrix on hospitals  (same as above)
+TO DO = Report what we see on (possible) differnces and Why.
+
+
+ 
+
+Q5: DIC FOLLOW UP : model building
+DONE : DIC FOR ALL COVARS
+TO DO : compare DIC intercept model with DIC intercept + all covars
+Personally = THIS IS A QUESTION WHERE WE REPORT OUR INTERPRETATION ABOUT THE DIC parameter (Mean deviance + Penalty added)
+
+BASELINE DIC / FULL MODEL DIC / BEST MODEL DIC 
+
+just discuss slightly our 'logical'  modeling selection approach by levels .
+ 
+
+
+Q6: SUMMARY STATS
+
+done , stats available
+TO DO : COMMENT OUR summary stats for the full model (MCerror, DIC, ...)
+
+
+SUMMARY MEASURES + discussion , focus on variable selection with DIC
+
+effective parameters => sum of deviance + eff paramters
+
+ 
+
+ 
+
+ 
+
+Q7 : WHEN OVERDISPERSION:
+
+overdispersion of poisson not suitable anymore, too mean neq var anymore,
+
+solve this with other distribution....NEG BINOMIAL DISTRO
+ 
+
+1. WHAT DO WE EXPECT : 
+
+look at distro and check which is best.
+
+we do expect : THE TAILS ARE BIGGER IN NEG BIN then POisso, lambda not eq as var...
+
+decouple the mean from the variance with NB
+
+
+2. Is NEG BIN better => we already have the model
+
+LOOK AT DIC for the Hierarchical fit : half of poisson distro
+
+ 
+
+BASELINE DIC / FULL MODEL DIC / BEST MODEL DIC
+
+fun calc : option 3 this is similar with LME4 results => our uninformative prior will .  => this proves that the distribution of data is key., and not the prior choice. 
+
+ 
+
+3. MOtivation,
+personally I would. include a general conclusion and motivation, walking through all issues and options we met during
+this assignment (modeling time, convergence, parallellism, ....).
+
+Why is the Neg Bino better than poisson => overdispersion, decoupling var and mean, FOCUS ON STATISTICS, 
+
+side note our unknowleddge about the surevey variabiliyt.

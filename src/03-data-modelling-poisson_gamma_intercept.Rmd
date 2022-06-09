@@ -54,7 +54,7 @@ The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction fact
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
 ```{r _gamma}
-dic_gamma <- extract(JAGS.mod_gamma, what = "dic")
+dic_gamma <- extract.runjags(JAGS.mod_gamma, what = "dic")
 dic_gamma
 ```
 
@@ -110,7 +110,7 @@ The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction fact
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
 ```{r_gamma}
-dic_gamma <- extract(JAGS.mod_gamma, what = "dic")
+dic_gamma <- extract.runjags(JAGS.mod_gamma, what = "dic")
 dic_gamma
 ```
 

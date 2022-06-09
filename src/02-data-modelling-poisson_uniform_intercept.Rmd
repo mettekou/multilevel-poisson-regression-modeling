@@ -198,7 +198,7 @@ We subsequently obtain the DIC (Deviance Information Criterion) to
 assess the model performance.
 
 ```{r}
-dic_uniform <- extract(JAGS.mod_uniform, what = "dic")
+dic_uniform <- extract.runjags(JAGS.mod_uniform, what = "dic")
 dic_uniform
 ```
 
@@ -258,7 +258,7 @@ We subsequently obtain the DIC (Deviance Information Criterion) to
 assess the model performance.
 <!--- using references?? --->
 ```{r}
-dic_uniform <- extract(JAGS.mod_uniform, what = "dic")
+dic_uniform <- extract.runjags(JAGS.mod_uniform, what = "dic")
 dic_uniform
 ```
 

@@ -111,7 +111,7 @@ The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction fact
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
 
 ```{r}
-dic_uniform_cov <- extract(JAGS.mod_uniform_cov, what = "dic")
+dic_uniform_cov <- extract.runjags(JAGS.mod_uniform_cov, what = "dic")
 dic_uniform_cov
 ```
 
@@ -183,7 +183,7 @@ We subsequently obtain the DIC (Deviance Information Criterion) to assess the mo
 """
 <!--- using references?? --->
 ```{r}
-dic_uniform_cov <- extract(JAGS.mod_uniform_cov, what = "dic")
+dic_uniform_cov <- extract.runjags(JAGS.mod_uniform_cov, what = "dic")
 dic_uniform_cov
 ```
 
