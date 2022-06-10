@@ -192,7 +192,7 @@ dic_gamma <- extract.runjags(JAGS.mod_gamma, what = "dic")
 dic_gamma
 ```
 
-This DIC is only slightly worse than that obtained under uniform priors for the variance
+This DIC is only slightly worse than that obtained under uniform priors for the variance. Such limited effect was to be expected given the large amount of data in the dataset.
 Given this fact and its more concentrated posterior for `hosp_precision`, we decide to continue with the model with uniform priors for the variance.
 
 - **Rank the hospitals according to their random effect (in WinBUGS it is possible with the rank option). Are there hospitals with important differences in the PA baseline level?**
