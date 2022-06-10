@@ -15,6 +15,7 @@ library(ggmcmc)
 ```
 
 ```{r globals}
+theme_set(theme_bw())
 data_path <- "data/BurnoutPA.txt"
 burn_in_iterations <- 4000
 sample_iterations <- 10000
@@ -474,31 +475,26 @@ visual inspection.
 
 For example, here are the trace plots for the precision of the random
 intercept for unit (`unit_precision`) and for hospital (`hosp_precision`), 
-as well as for the covariates:
-  
-```{r, fig.ncols = 2, out.width="50%", fig.align='center', fig.show='hold', fig.align = "center", fig.cap="Trace ((a) and (d)), autocorrelation ((b) and (e)), and running mean ((c) and (f)) plots for the model with inverse gamma priors on random intercept variances, without covariates", fig.subcap=c('', '', '', '', '', '')}
-par(c(3, 2))
+as well as for the covariates: 
+
+The trace plots seem to mix well. Autocorrelation seems to remain high for a long time. [However, give our large burn-in of 4000 iterations, this autocorrelation does not pose a problem.]
+
+```{r negativeBinomDiag, fig.ncol = 2, out.width="50%", fig.align='center', fig.show='hold', fig.align = "center", fig.cap="Trace ((a) and (d)), autocorrelation ((b) and (e)) plots for the negative binomial model", fig.subcap=c('', '', '', '')}
+par(mfrow = c(2, 3))
 plot_jags(JAGS.mod_binom_uniform_cov, "trace", "unit_precision")
 plot_jags(JAGS.mod_binom_uniform_cov, "autocorr", "unit_precision")
 plot_jags(JAGS.mod_binom_uniform_cov, "trace", "hosp_precision")
 plot_jags(JAGS.mod_binom_uniform_cov, "autocorr", "hosp_precision")
 plot_jags(JAGS.mod_binom_uniform_cov, "trace", "we_coefficient")
+plot_jags(JAGS.mod_binom_uniform_cov, "autocorr", "hosp_precision")
 ```
-
-
-<!--- TO BE UPDATED: 
-  The trace plot seem fairly ok. There are still quite some outliers, but none of the plots get stuck.
---->
-  
-The model ran, and we can inspect its results.
 
 ```{r negative-binomial-covariates-summary, results = TRUE}
 JAGS.mod_binom_uniform_cov
 ```
 
-The Gelman-Rubin ANOVA diagnostic (i.e. estimated potential scale reduction factor - PSRF) is close to 1 for all parameters, which is the aim. Only for  `hosp_precision` it amounts to 1.92. Also, the MCMC error is still fairly large in comparison with the SD, ranging from 0.5 to 5.0. Additional measures (longer chain, accelerating measure) are necessary.
-
-
+The PSRF is close to 1 for all parameters, which is the aim. Also, the MCMC error is relatively small as a percentage of standard deviation, ranging from 0.5 to 4.6. This is substantially higher than for the previous models, although the MCMC error remains below the 5% threshold.
+We subsequently obtain the DIC to assess the model performance.
 We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
   
 The results are the following:
@@ -508,19 +504,15 @@ dic_binom_uniform_cov <- extract.runjags(JAGS.mod_binom_uniform_cov, what = "dic
 dic_binom_uniform_cov
 ```
 
-<!--- TO BE UPDATED:
-  The trace plots look fairly well, with some outliers. None of the trace plots get stuck.
---->
+The DIC is substantially better than under the previous model, which assumes a Poisson distribution for the reduced personal accomplishment dimension of burnout.
+However, we do incur a considerable penalty for switching models: it is brought about by the additional parameter the negative binomial distribution requires.
 
 - **Motivate your conclusion.**
 
-personally I would. include a general conclusion and motivation, walking through all issues and options we met during
-this assignment (modeling time, convergence, parallellism, ....).
-
-Why is the Neg Bino better than poisson => overdispersion, decoupling var and mean, FOCUS ON STATISTICS, 
-
-side note our unknowleddge about the surevey variabiliyt.
-
-
+We conclude that the negative binomial distribution fits the data better.
+We find that switching priors or including covariates makes little sense when we choose the wrong model to begin with, as evidenced by the considerable drop in DIC.
+In Bayesian inference, just as in frequentist inference, the domain expertise which drives the choice of model is vital.
+The difference is that in Bayesian inference, this expertise can also drive the choice of prior.
+Informative priors could possibly further improve our model.
 
 [1]: https://bmcnurs.biomedcentral.com/articles/10.1186/1472-6955-10-6 "Sermeus et al. (2011)."
