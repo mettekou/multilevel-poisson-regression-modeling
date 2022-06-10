@@ -495,7 +495,6 @@ JAGS.mod_binom_uniform_cov
 
 The PSRF is close to 1 for all parameters, which is the aim. Also, the MCMC error is relatively small as a percentage of standard deviation, ranging from 0.5 to 4.6. This is substantially higher than for the previous models, although the MCMC error remains below the 5% threshold.
 We subsequently obtain the DIC to assess the model performance.
-We subsequently obtain the DIC (Deviance Information Criterion) to assess the model performance.
   
 The results are the following:
   
