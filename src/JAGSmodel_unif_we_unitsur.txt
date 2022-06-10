@@ -1,6 +1,6 @@
 ######################################################################################################
 ######################################################################################################
-#### JAGS model file written by runjags version 2.2.1-7 on 2022-06-09 20:26:07 
+#### JAGS model file written by runjags version 2.2.1-7 on 2022-06-10 02:47:14 
 ######################################################################################################
 ######################################################################################################
 
@@ -13,11 +13,14 @@ for(i in 1:N){
 	# These lines describe the response distribution and linear model terms:
 	pa[i] ~ dpois(regression_fitted[i])
 	regression_residual[i] <- pa[i] - regression_fitted[i]
-	log(regression_fitted[i]) <- intercept + unit_randomeffect[unit[i]] + hosp_randomeffect[hosp[i]] 
+	log(regression_fitted[i]) <- intercept + we_coefficient * we[i] + unitsur_effect[unitsur[i]] + unit_randomeffect[unit[i]] + hosp_randomeffect[hosp[i]] 
 }
 
 # These lines give the prior distributions for the parameters to be estimated:
 intercept ~ dnorm(0, 10^-6)
+we_coefficient ~ dnorm(0, 10^-6)
+unitsur_effect[1] <- 0    # Factor level "0"
+unitsur_effect[2] ~ dnorm(0, 10^-6)    # Factor level "1"
 for(unit_iterator in 1:126){
 	unit_randomeffect[unit_iterator] ~ dnorm(0, unit_precision)
 }
@@ -28,12 +31,12 @@ for(hosp_iterator in 1:30){
 }
 invunif2 ~ dunif(0.001, 1000)
 hosp_precision <- 1/invunif2
-resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
+resid.sum.sq <- sum(regression_residual^2)#data# pa, we, unitsur, unit, hosp
 
 }
 
 # These lines are hooks to be read by runjags (they are ignored by JAGS):
-#monitor# intercept, unit_precision, hosp_precision, deviance, dic, resid.sum.sq
+#monitor# intercept, we_coefficient, unitsur_effect, unit_precision, hosp_precision, deviance, dic, resid.sum.sq
 #modules# glm on
 #response# pa
 #residual# regression_residual
@@ -47,33 +50,44 @@ resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
 
 inits{
 "intercept" <- 1
-"invunif" <- 10
-"infunif2" <- 0.01
+"we_coefficient" <- 1
+"unitsur_effect" <- c(NA, 1)
+"invunif" <- 0.01
+"invunif2" <- 0.01
 }
 
 inits{
 "intercept" <- 1
+"we_coefficient" <- -1
+"unitsur_effect" <- c(NA, 1)
 "invunif" <- 10
-"infunif2" <- 0.01
+"invunif2" <- 0.01
 }
 
 inits{
-"intercept" <- -1
-"invunif" <- 10
+"intercept" <- 1
+"we_coefficient" <- 1
+"unitsur_effect" <- c(NA, 1)
+"invunif" <- 0.01
 "invunif2" <- 10
 }
 
 inits{
 "intercept" <- -1
+"we_coefficient" <- 1
+"unitsur_effect" <- c(NA, -1)
 "invunif" <- 0.01
-"invunif2" <- 0.01
+"invunif2" <- 10
 }
 
 inits{
-"intercept" <- 1
+"intercept" <- -1
+"we_coefficient" <- -1
+"unitsur_effect" <- c(NA, 1)
 "invunif" <- 0.01
-"invunif2" <- 0.01
+"invunif2" <- 10
 }
+
 
 
 ######################################################################################################
@@ -82,7 +96,7 @@ inits{
 ######################################################################################################
 ######################################################################################################
 
-data {
+data{
 "N" <- 1118
 
 }

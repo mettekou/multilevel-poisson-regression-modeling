@@ -1,6 +1,6 @@
 ######################################################################################################
 ######################################################################################################
-#### JAGS model file written by runjags version 2.2.1-7 on 2022-05-13 20:06:41 
+#### JAGS model file written by runjags version 2.2.1-7 on 2022-06-10 02:37:21 
 ######################################################################################################
 ######################################################################################################
 
@@ -9,7 +9,7 @@
 model{
 
 # In the BUGS/JAGS language we must use an explicit for loop:
-for(i in 1:1118){
+for(i in 1:N){
 	# These lines describe the response distribution and linear model terms:
 	pa[i] ~ dpois(regression_fitted[i])
 	regression_residual[i] <- pa[i] - regression_fitted[i]
@@ -21,16 +21,21 @@ intercept ~ dnorm(0, 10^-6)
 for(unit_iterator in 1:126){
 	unit_randomeffect[unit_iterator] ~ dnorm(0, unit_precision)
 }
-invtau ~ dgamma(1/0.001, 1/0.001)
-unit_precision <- 1/invtau
+unit_precision ~ dgamma(0.001, 0.001)
 for(hosp_iterator in 1:30){
 	hosp_randomeffect[hosp_iterator] ~ dnorm(0, hosp_precision)
 }
-invtau2 ~ dgamma(1/0.001, 1/0.001)
-hosp_precision <- 1/invtau2
+hosp_precision ~ dgamma(0.001, 0.001)
 resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
 
 }
+
+# These lines are hooks to be read by runjags (they are ignored by JAGS):
+#monitor# intercept, unit_precision, hosp_precision, deviance, dic, resid.sum.sq
+#modules# glm on
+#response# pa
+#residual# regression_residual
+#fitted# regression_fitted
 
 ######################################################################################################
 ######################################################################################################
@@ -38,7 +43,35 @@ resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
 ######################################################################################################
 ######################################################################################################
 
+inits{
+"intercept" <- 1
+"unit_precision" <- 0.01
+"hosp_precision" <- 0.01
+}
 
+inits{
+"intercept" <- -1
+"unit_precision" <- 10
+"hosp_precision" <- 0.01
+}
+
+inits{
+"intercept" <- -1
+"unit_precision" <- 10
+"hosp_precision" <- 10
+}
+
+inits{
+"intercept" <- -1
+"unit_precision" <- 10
+"hosp_precision" <- 0.01
+}
+
+inits{
+"intercept" <- 1
+"unit_precision" <- 0.01
+"hosp_precision" <- 10
+}
 
 
 
@@ -48,6 +81,10 @@ resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
 ######################################################################################################
 ######################################################################################################
 
+data{
+"N" <- 1118
+
+}
 
 ######################################################################################################
 ######################################################################################################

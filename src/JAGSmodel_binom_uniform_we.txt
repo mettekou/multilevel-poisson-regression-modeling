@@ -1,6 +1,6 @@
 ######################################################################################################
 ######################################################################################################
-#### JAGS model file written by runjags version 2.2.1-7 on 2022-06-09 20:26:07 
+#### JAGS model file written by runjags version 2.2.1-7 on 2022-06-10 02:59:39 
 ######################################################################################################
 ######################################################################################################
 
@@ -13,11 +13,19 @@ for(i in 1:N){
 	# These lines describe the response distribution and linear model terms:
 	pa[i] ~ dpois(regression_fitted[i])
 	regression_residual[i] <- pa[i] - regression_fitted[i]
-	log(regression_fitted[i]) <- intercept + unit_randomeffect[unit[i]] + hosp_randomeffect[hosp[i]] 
+	dispersion[i] ~ dgamma(k, k)
+	regression_fitted[i] <- regression_mean[i] * dispersion[i]
+	# Note: this formulation of a gamma-Poisson is exactly equivalent to a Negative Binomial
+	log(regression_mean[i]) <- intercept + we_coefficient * we[i] + unit_randomeffect[unit[i]] + hosp_randomeffect[hosp[i]] 
 }
 
 # These lines give the prior distributions for the parameters to be estimated:
+invunif3 ~ dunif(0.001, 1000)
+k <- 1/invunif3
+	# Note: the prior for the diserpsion parameter k is quite important for convergence
+	# [A DuMouchel prior may be better than a Gamma prior]
 intercept ~ dnorm(0, 10^-6)
+we_coefficient ~ dnorm(0, 10^-6)
 for(unit_iterator in 1:126){
 	unit_randomeffect[unit_iterator] ~ dnorm(0, unit_precision)
 }
@@ -28,12 +36,12 @@ for(hosp_iterator in 1:30){
 }
 invunif2 ~ dunif(0.001, 1000)
 hosp_precision <- 1/invunif2
-resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
+resid.sum.sq <- sum(regression_residual^2)#data# pa, we, unit, hosp
 
 }
 
 # These lines are hooks to be read by runjags (they are ignored by JAGS):
-#monitor# intercept, unit_precision, hosp_precision, deviance, dic, resid.sum.sq
+#monitor# k, intercept, we_coefficient, unit_precision, hosp_precision, deviance, dic, resid.sum.sq
 #modules# glm on
 #response# pa
 #residual# regression_residual
@@ -46,34 +54,45 @@ resid.sum.sq <- sum(regression_residual^2)#data# pa, unit, hosp
 ######################################################################################################
 
 inits{
+"invunif3" <- 0.01
 "intercept" <- 1
-"invunif" <- 10
-"infunif2" <- 0.01
-}
-
-inits{
-"intercept" <- 1
-"invunif" <- 10
-"infunif2" <- 0.01
-}
-
-inits{
-"intercept" <- -1
+"we_coefficient" <- -1
 "invunif" <- 10
 "invunif2" <- 10
 }
 
 inits{
+"invunif3" <- 10
 "intercept" <- -1
-"invunif" <- 0.01
+"we_coefficient" <- -1
+"invunif" <- 10
 "invunif2" <- 0.01
 }
 
 inits{
+"invunif3" <- 0.01
 "intercept" <- 1
+"we_coefficient" <- 1
 "invunif" <- 0.01
+"invunif2" <- 10
+}
+
+inits{
+"invunif3" <- 10
+"intercept" <- 1
+"we_coefficient" <- 1
+"invunif" <- 10
 "invunif2" <- 0.01
 }
+
+inits{
+"invunif3" <- 10
+"intercept" <- 1
+"we_coefficient" <- -1
+"invunif" <- 10
+"invunif2" <- 0.01
+}
+
 
 
 ######################################################################################################
@@ -82,7 +101,7 @@ inits{
 ######################################################################################################
 ######################################################################################################
 
-data {
+data{
 "N" <- 1118
 
 }

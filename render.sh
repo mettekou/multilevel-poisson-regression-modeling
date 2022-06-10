@@ -1,4 +1,4 @@
 #!/bin/sh
 
-rm _main.Rmd
+rm Shilaan_Alzahawi.Rmd
 R -f render.R

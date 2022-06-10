@@ -7,6 +7,9 @@ author:
     - Leah Shitindi
     - Niels Tack
 date: "`r Sys.Date()`"
-documentclass: report
+documentclass: article
 papersize: a4
+bibliography: src/references.bib
+output:
+  toc: false
 ---

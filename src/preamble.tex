@@ -1,4 +1,5 @@
 \AtBeginDocument{\let\maketitle\relax}%
+\AtBeginDocument{\let\tableofcontents\relax}%
 %
 \usepackage{tikz}%
 \graphicspath{{bin/images}}%
@@ -21,8 +22,6 @@
 %
 \setlength{\parindent}{0pt}%
 %
-\usepackage{caption}
-\usepackage{subcaption}
 \usepackage[section]{placeins}
 \usepackage[toc, page]{appendix}%
 \usepackage{pdfpages}%
@@ -34,19 +33,19 @@
 \definecolor{UGentWeAqua}{RGB/cmyk}{45,145,168/}%
 
 \usepackage[explicit]{titlesec}
-\titleformat{\chapter}
+\titleformat{\section}
 {\color{UGentBlue}\huge\MakeUppercase}
 {}
 {0pt}
 {\underline{#1}}
 
-\titleformat{\section}
+\titleformat{\subsection}
 {\Large\bfseries\color{UGentBlue}}
 {}
 {0pt}
 {#1}
 
-\titleformat{\subsection}
+\titleformat{\subsubsection}
 {\large\bfseries\color{UGentBlue}}
 {}
 {0pt}
