@@ -8,6 +8,8 @@ library(readr)
 library(parallel)
 library(runjags)
 library(dplyr) # used for arrange(), to rank hospitals
+library(ggplot2)
+library(gridExtra)
 library(mcmcplots) # for running mean plot
 library(ggmcmc)
 ```
@@ -197,19 +199,17 @@ Given this fact and its more concentrated posterior for `hosp_precision`, we dec
 
 - **Rank the hospitals according to their random effect (in WinBUGS it is possible with the rank option). Are there hospitals with important differences in the PA baseline level?**
 
-``` {r ranked}
+``` {r ranked, results = TRUE, fig.ncol = 2, out.width = "100%", fig.show='hold', fig.align = "center"}
 hosp_randomeffects <- add.summary(JAGS.mod_uniform, vars = "hosp_randomeffect") # obtain hosp_randomeffects out 
 hosp_randomeffects_means <-  data.frame(print(hosp_randomeffects))["Mean"] # transform runjags.object to dataframe to enable further handling
 hosp_randomeffects_ranked <- arrange(hosp_randomeffects_means, hosp_randomeffects_means$Mean) # sort intercepts
 
 print(hosp_randomeffects_ranked)
-hist(hosp_randomeffects_ranked$Mean)
-```
-
-```{r}
+histogram <- ggplot(hosp_randomeffects_ranked, aes(x = Mean)) + geom_histogram()
 mcmc.uniform_sample<-as.mcmc(JAGS.mod_uniform)
 mcmc.sample<-ggs(mcmc.uniform_sample)
-ggs_caterpillar(mcmc.sample,family=c("hosp_randomeffect"))
+caterpillar <- ggs_caterpillar(mcmc.sample,family=c("hosp_randomeffect"))
+grid.arrange(histogram, caterpillar, ncol = 2, nrow = 1)
 ```
 
 There seem to be hospitals with noticeable differences in the PA baseline level.
@@ -228,7 +228,7 @@ JAGS.mod_uniform_cov <- run.jags(
     "intercept", "unit_precision", "hosp_precision",
     "expe_coefficient", "full_effect", "unitsur_effect",
     "we_coefficient", "tech_effect", "teach_effect", "beds_coefficient",
-    "deviance", "dic"
+    "deviance", "dic", "hosp_randomeffect"
   ),
   burnin = burn_in_iterations, # make informed decision later (choosing speed here)
   sample = sample_iterations, # make informed decision later (choosing speed here)
@@ -286,6 +286,19 @@ JAGS.mod_uniform_cov
 
 The PSRF is again close to 1 for all parameters.
 The MCMC error is always small as a percentage of standard deviation, ranging from 0.5 to 1.7 %.
+
+``` {r ranked_cov}
+hosp_randomeffects_cov <- add.summary(JAGS.mod_uniform_cov, vars = "hosp_randomeffect") # obtain hosp_randomeffects out 
+hosp_randomeffects_means_cov <-  data.frame(print(hosp_randomeffects_cov))["Mean"] # transform runjags.object to dataframe to enable further handling
+hosp_randomeffects_ranked_cov <- arrange(hosp_randomeffects_means_cov, hosp_randomeffects_means_cov$Mean) # sort intercepts
+
+print(hosp_randomeffects_ranked_cov)
+histogram_cov <- ggplot(hosp_randomeffects_ranked_cov, aes(x = Mean)) + geom_histogram()
+mcmc.uniform_sample_cov<-as.mcmc(JAGS.mod_uniform_cov)
+mcmc.sample_cov<-ggs(mcmc.uniform_sample_cov)
+caterpillar_cov <- ggs_caterpillar(mcmc.sample_cov,family=c("hosp_randomeffect"))
+grid.arrange(histogram_cov, caterpillar_cov, ncol = 2, nrow = 1)
+```
 
 - **Check with DIC whether the inclusion of the covariates improves the fit with respect to the baseline model. Determine what variables to include using this selection criterion.**
 
@@ -447,7 +460,7 @@ JAGS.mod_binom_uniform_cov <- run.jags(
     "k", "intercept", "unit_precision", "hosp_precision", "we_coefficient", "deviance"
   ),
   burnin = burn_in_iterations, # make informed decision later (choosing speed here)
-  sample = sample_iterations * 4, # make informed decision later (choosing speed here)
+  sample = sample_iterations, # make informed decision later (choosing speed here)
   method = "rjags"
 )
 ```
