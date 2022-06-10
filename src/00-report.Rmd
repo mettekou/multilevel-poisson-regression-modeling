@@ -503,7 +503,7 @@ dic_binom_uniform_cov <- extract.runjags(JAGS.mod_binom_uniform_cov, what = "dic
 dic_binom_uniform_cov
 ```
 
-The DIC is substantially better than under the previous model, which assumes a Poisson distribution for the reduced personal accomplishment dimension of burnout.
+The DIC is substantially better than under the previous model, which assumes a Poisson distribution for the reduced personal accomplishment dimension of burnout. This might be due to the fact that the Poisson distribution does not adequately take account of overdispersion. Through the Binomial distribution we allow the mean and the variance to differ (as opposed to under the Poisson where the same parameter represents both). This allows for more variability and fat tails, which i.c. fits better.
 However, we do incur a considerable penalty for switching models: it is brought about by the additional parameter the negative binomial distribution requires.
 
 - **Motivate your conclusion.**
