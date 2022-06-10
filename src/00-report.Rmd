@@ -105,7 +105,7 @@ JAGS.mod_uniform <- run.jags(
 Before assessing the model performance through formal measures, we opt for a visual inspection. 
 Figure \@ref(fig:modUniformConvergence) depicts trace, autocorrelation, and running mean plots for the precision esimates of the random intercepts for unit (`unit_precision`) and for hospital (`hosp_precision`).
 These serve to assess the ergodicity of the chains.
-The autocorrelation seems limited: for `unit_precision`, the autocorrelation is almost zero at lag 15. For `hosp_precision`, the descent is even more pronounced. The trace plot for `unit_precision` shows the chains are in agreement and the running mean plot indicates a mean which quickly becomes stable. We note similar plots for `hosp_precision`.
+The autocorrelation seems limited: for `unit_precision`, the autocorrelation is almost 0 at lag 15. For `hosp_precision`, the descent is less pronounced: it reaches 0 around lag 25. The trace plot for `unit_precision` shows the chains are in agreement and the running mean plot indicates a mean which quickly becomes stable. We note similar plots for `hosp_precision`.
 
 ```{r modUniformConvergence, fig.ncol = 3, out.width = "33%", fig.show='hold', fig.align = "center", fig.cap="Trace ((a) and (d)), autocorrelation ((b) and (e)), and running mean ((c) and (f)) plots for the model with uniform priors on random intercept variances, without covariates", fig.subcap=c('', '', '', '')}
 par(mfrow = c(3, 2))
@@ -177,7 +177,8 @@ plot(JAGS.mod_gamma, plot.type = "autocorr", vars = "hosp_precision")
 rmeanplot(JAGS.mod_gamma, parms = "hosp_precision")
 ```
 
-The autocorrelation plots show that the autocorrelation is limited: about 0 at lag 5 for both `unit_precision` and `hosp_precision`). 
+The autocorrelation plots show that the autocorrelation is limited: about 0 at lag 15 for `unit_precision` and about 0 at lag 25 for `hosp_precision`.
+We conclude the autocorrelation is similar to the autocorrelation for the model with uniform variance priors.
 The trace plots for `unit_precision` and `hosp_precision` indicate agreement between the chains.
 The running mean plots are as stable as for the previous model.
 What we do see is that this model does not agree with the previous model's estimate of `hosp_precision`: it is notably higher for this model.
