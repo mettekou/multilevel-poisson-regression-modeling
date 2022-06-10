@@ -287,7 +287,7 @@ JAGS.mod_uniform_cov
 The PSRF is again close to 1 for all parameters.
 The MCMC error is always small as a percentage of standard deviation, ranging from 0.5 to 1.7 %.
 
-``` {r ranked_cov}
+``` {r rankedCov, fig.cap = "Hospitals ranked by their random effect for the model including covariates"}
 hosp_randomeffects_cov <- add.summary(JAGS.mod_uniform_cov, vars = "hosp_randomeffect") # obtain hosp_randomeffects out 
 hosp_randomeffects_means_cov <-  data.frame(print(hosp_randomeffects_cov))["Mean"] # transform runjags.object to dataframe to enable further handling
 hosp_randomeffects_ranked_cov <- arrange(hosp_randomeffects_means_cov, hosp_randomeffects_means_cov$Mean) # sort intercepts
@@ -299,6 +299,9 @@ mcmc.sample_cov<-ggs(mcmc.uniform_sample_cov)
 caterpillar_cov <- ggs_caterpillar(mcmc.sample_cov,family=c("hosp_randomeffect"))
 grid.arrange(histogram_cov, caterpillar_cov, ncol = 2, nrow = 1)
 ```
+
+Figure \@ref(fig:rankedCov) shows the hospital ranking does change when controlling for covariates.
+Most of the top hospitals stay near the top, but some, such as 17, do move considerably in the ranking.
 
 - **Check with DIC whether the inclusion of the covariates improves the fit with respect to the baseline model. Determine what variables to include using this selection criterion.**
 
