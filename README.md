@@ -45,7 +45,7 @@ On Windows, run `render.cmd` to render the report.
 
 On UNIX systems, such as macOS and Linux, execute `render.sh` to render the report.
 
-### Oral exam feedback
+## Oral exam feedback
 
 - Formula for Poisson regression model is wrong
 - Prefer posterior predictive checks for goodness-of-fit over minimizing DIC
