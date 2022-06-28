@@ -48,4 +48,5 @@ On UNIX systems, such as macOS and Linux, execute `render.sh` to render the repo
 ## Oral exam feedback
 
 - Formula for Poisson regression model is wrong
+- Rather than dumping output to report, explain estimates 
 - Prefer posterior predictive checks for goodness-of-fit over minimizing DIC
